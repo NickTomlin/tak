@@ -1,0 +1,19 @@
+{
+  "name": "tak",
+  "version": "0.1.0",
+  "description": "tak — a stack-based language for the browser",
+  "main": "dist/tak.js",
+  "scripts": {
+    "build": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak",
+    "build:dev": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap",
+    "watch": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["stack-based", "language", "browser"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.0"
+  }
+}

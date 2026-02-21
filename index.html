@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tak — stack-based language</title>
+</head>
+<body>
+  <h1>tak test harness</h1>
+  <p>Open the browser console to see output.</p>
+
+  <script src="dist/tak.js" data-debug="true"></script>
+  <script type="text/tak">
+    // Stack ops test
+    fn square ( n -- n ) { dup * }
+    fn greet  ( str -- ) { "Hello, " swap concat . }
+
+    5 square .
+    "World" greet
+
+    // Conditional
+    10 0 > [ "positive" . ] [ "non-positive" . ] if
+
+    // Loop
+    3 [ "tick" . ] times
+  </script>
+</body>
+</html>
