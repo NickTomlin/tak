@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tak — hello world</title>
+  <style>
+    body { font-family: monospace; background: #1a1a2e; color: #d4f4d4; padding: 2rem; }
+    h1 { color: #80ff80; }
+    pre { background: #0d0d1a; padding: 1rem; border-radius: 6px; border-left: 3px solid #40a040; }
+  </style>
+</head>
+<body>
+  <h1>tak — hello world</h1>
+  <p>Open the browser console to see output.</p>
+  <pre>
+// Stack ops &amp; function definitions
+fn square ( n -- n ) { dup * }
+fn greet  ( str -- ) { "Hello, " swap concat . }
+
+5 square .        // prints 25
+"World" greet     // prints Hello, World
+
+// Quotations and control flow
+3 0 > [ "positive" . ] [ "non-positive" . ] if
+
+// Arrays and combinators
+[ 1 2 3 4 5 ] [ dup * ] map
+"squared:" . . // print label then the array
+
+// String ops
+"hello" " " "world" concat concat .
+  </pre>
+
+  <script src="../dist/tak.js"></script>
+  <script type="text/tak">
+// Basic literals and stack ops
+42 .
+3.14 .
+"tak says hello!" .
+true .
+
+// Arithmetic
+10 3 + .      // 13
+10 3 - .      // 7
+10 3 * .      // 30
+10 3 / .      // 3.333...
+10 3 % .      // 1
+2 8 ** .      // 256
+
+// Stack words
+5 dup * .     // 25 (dup then multiply)
+1 2 swap .    // 2 (top of stack after swap)
+drop          // clean up
+
+// Function definition
+fn square ( n -- n ) { dup * }
+fn cube   ( n -- n ) { dup dup * * }
+fn greet  ( str -- ) { "Hello, " swap concat . }
+
+4 square .    // 16
+3 cube .      // 27
+"World" greet // Hello, World
+
+// Quotations and control flow
+5 0 > [ "five is positive" . ] [ "not positive" . ] if
+
+10 [ dup 0 > ] [ 1 - dup . ] while
+drop
+
+5 [ "tick" . ] times
+
+// Arrays
+[ 1 2 3 4 5 ] [ dup * ] map .
+
+// String ops
+"hello" " world" concat .
+
+// Type checking
+42 type .
+"hi" string? .
+null null? .
+  </script>
+</body>
+</html>

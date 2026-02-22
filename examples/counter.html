@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tak — counter</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #1a1a2e;
+      color: #d4f4d4;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    h1 { color: #80ff80; margin: 0; }
+    #count { font-size: 4rem; font-weight: bold; color: #80ff80; }
+    button {
+      font-family: monospace;
+      font-size: 1.2rem;
+      padding: 0.5rem 2rem;
+      background: #1a3a1a;
+      color: #80ff80;
+      border: 1px solid #40a040;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover { background: #2a4a2a; }
+    #app { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>tak — DOM counter</h1>
+  <div id="app">
+    <div id="count">0</div>
+    <button id="inc">+ Increment</button>
+    <button id="dec">− Decrement</button>
+    <button id="reset">Reset</button>
+  </div>
+
+  <!-- Enable debug panel to watch stack during events -->
+  <script src="../dist/tak.js" data-debug="true"></script>
+  <script type="text/tak">
+// Helper: read the counter value from the DOM
+fn get-count ( -- n ) {
+  @js(parseInt(document.getElementById('count').textContent, 10))
+}
+
+// Helper: write a number to the counter display
+fn set-count ( n -- ) {
+  str "#count" dom/query swap dom/text drop
+}
+
+// Increment button
+"#inc" dom/query
+"click"
+[
+  drop            // discard element pushed by handler
+  get-count 1 +
+  set-count
+]
+dom/on drop
+
+// Decrement button
+"#dec" dom/query
+"click"
+[
+  drop
+  get-count 1 -
+  set-count
+]
+dom/on drop
+
+// Reset button
+"#reset" dom/query
+"click"
+[
+  drop
+  0 set-count
+]
+dom/on drop
+
+"Counter wired up." .
+  </script>
+</body>
+</html>
