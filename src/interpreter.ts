@@ -253,8 +253,9 @@ export class TakInterpreter extends TakEmitter {
   private async evalJsExpr(node: JsExpr): Promise<void> {
     let result: unknown;
     try {
+      // Indirect eval: runs in global scope, avoids bundler scope-hoisting issues
       // eslint-disable-next-line no-eval
-      result = eval(node.expr);
+      result = (0, eval)(node.expr);
     } catch (err) {
       throw new TakError(
         `@js eval error: ${err instanceof Error ? err.message : String(err)}`,
