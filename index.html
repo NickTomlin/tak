@@ -3,26 +3,152 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>tak — stack-based language</title>
+  <title>tak repl</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      background: #1a1a2e;
+      color: #d4f4d4;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    nav {
+      padding: 0.5rem 1rem;
+      background: rgba(40,80,40,0.4);
+      border-bottom: 1px solid #40a040;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-shrink: 0;
+    }
+    nav .brand { color: #80ff80; font-weight: bold; font-size: 1.1rem; }
+    nav a { color: #a0d4a0; text-decoration: none; font-size: 0.85rem; }
+    nav a:hover { color: #80ff80; }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      gap: 0.75rem;
+      overflow: hidden;
+    }
+    #editor {
+      flex: 1;
+      resize: none;
+      background: rgba(255,255,255,0.04);
+      color: #d4f4d4;
+      border: 1px solid #40a040;
+      border-radius: 4px;
+      padding: 0.75rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      min-height: 160px;
+    }
+    #editor:focus { border-color: #80ff80; }
+    .toolbar { display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0; }
+    button#run-btn {
+      background: #1a3a1a;
+      color: #80ff80;
+      border: 1px solid #40a040;
+      border-radius: 4px;
+      padding: 0.4rem 1.2rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    button#run-btn:hover { background: #2a4a2a; }
+    .hint { color: rgba(180,255,180,0.4); font-size: 0.78rem; }
+    #output {
+      flex: 1;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid #2a4a2a;
+      border-radius: 4px;
+      padding: 0.75rem;
+      overflow-y: auto;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      min-height: 80px;
+    }
+    .out-line { color: #d4f4d4; }
+    .out-stack { color: rgba(180,255,180,0.45); font-size: 0.8rem; margin-top: 0.5rem; }
+    .out-error { color: #ff8080; }
+    .out-empty { color: rgba(180,255,180,0.3); font-style: italic; }
+  </style>
 </head>
 <body>
-  <h1>tak test harness</h1>
-  <p>Open the browser console to see output.</p>
+  <nav>
+    <span class="brand">tak</span>
+    <a href="examples/counter.html">counter</a>
+    <a href="examples/hello.html">hello</a>
+    <a href="examples/fetch.html">fetch</a>
+    <a href="test-harness/">test harness</a>
+  </nav>
+  <main>
+    <textarea id="editor" spellcheck="false">"Hello, tak!" .</textarea>
+    <div class="toolbar">
+      <button id="run-btn">Run</button>
+      <span class="hint">Ctrl+Enter</span>
+    </div>
+    <pre id="output"><span class="out-empty">output appears here</span></pre>
+  </main>
 
-  <script src="dist/tak.js" data-debug="true"></script>
-  <script type="text/tak">
-    // Stack ops test
-    fn square ( n -- n ) { dup * }
-    fn greet  ( str -- ) { "Hello, " swap concat . }
+  <script src="dist/tak.js"></script>
+  <script>
+    const editor = document.getElementById('editor');
+    const output = document.getElementById('output');
+    const runBtn = document.getElementById('run-btn');
 
-    5 square .
-    "World" greet
+    async function run() {
+      const source = editor.value;
+      output.innerHTML = '';
 
-    // Conditional
-    10 0 > [ "positive" . ] [ "non-positive" . ] if
+      const lines = [];
 
-    // Loop
-    3 [ "tick" . ] times
+      try {
+        const interp = new Tak.TakInterpreter();
+        Tak.registerStdlib(interp);
+        Tak.registerDomStdlib(interp);
+
+        const printFn = i => { lines.push(String(i.pop())); };
+        interp.defineWord('.', printFn);
+        interp.defineWord('log', printFn);
+
+        const tokens = Tak.tokenize(source);
+        const program = Tak.parse(tokens);
+        await interp.run(program);
+
+        if (lines.length === 0 && interp.stack.length === 0) {
+          output.innerHTML = '<span class="out-empty">no output</span>';
+        } else {
+          for (const l of lines) {
+            const div = document.createElement('div');
+            div.className = 'out-line';
+            div.textContent = l;
+            output.appendChild(div);
+          }
+          if (interp.stack.length > 0) {
+            const stackLine = document.createElement('div');
+            stackLine.className = 'out-stack';
+            stackLine.textContent = 'stack: [ ' + interp.stack.map(String).join(' ') + ' ]';
+            output.appendChild(stackLine);
+          }
+        }
+      } catch (err) {
+        const div = document.createElement('div');
+        div.className = 'out-error';
+        div.textContent = err instanceof Error ? err.message : String(err);
+        output.appendChild(div);
+      }
+    }
+
+    runBtn.addEventListener('click', run);
+    editor.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); run(); }
+    });
   </script>
 </body>
 </html>
