@@ -175,7 +175,7 @@
         const card = document.createElement('div');
         card.className = `test-card ${statusClass}`;
         card.innerHTML = `
-          <span class="status ${statusClass}">${statusSym}</span>
+          <span class="status ${escHtml(statusClass)}">${escHtml(statusSym)}</span>
           <div class="test-body">
             <div class="test-snippet">${escHtml(t.snippet)}</div>
             <div class="test-expected">expected: ${escHtml(t.expected)}</div>
@@ -219,8 +219,8 @@
         }
       } finally {
         btn.disabled = false;
+        render();
       }
-      render();
     });
 
     document.getElementById('clear-btn').addEventListener('click', () => {
