@@ -81,13 +81,16 @@ export function registerDomStdlib(interp: TakInterpreter): void {
     const event = assertString(i.pop(), 'dom/on');
     const el = assertElement(i.pop(), 'dom/on');
 
-    el.addEventListener(event, async (_ev) => {
-      i.push(el as TakValue);
-      try {
-        await i.callQuot(quot);
-      } catch (err) {
-        console.error('[tak] dom/on handler error:', err);
-      }
+    let queue: Promise<void> = Promise.resolve();
+    el.addEventListener(event, (_ev) => {
+      queue = queue.then(async () => {
+        i.push(el as TakValue);
+        try {
+          await i.callQuot(quot);
+        } catch (err) {
+          console.error('[tak] dom/on handler error:', err);
+        }
+      });
     });
 
     i.push(el as TakValue);
