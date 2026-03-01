@@ -63,7 +63,7 @@ if (document.readyState === 'loading') {
 
 // Export public API for programmatic use
 export { TakInterpreter } from './interpreter.js';
-export { registerStdlib } from './stdlib.js';
+export { registerStdlib, takFormat } from './stdlib.js';
 export { registerDomStdlib } from './dom-stdlib.js';
 export { attachDebugPanel } from './debug-panel.js';
 export { tokenize } from './lexer.js';

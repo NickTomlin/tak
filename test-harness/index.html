@@ -144,7 +144,7 @@
       try {
         const interp = new Tak.TakInterpreter();
         Tak.registerStdlib(interp);
-        const printFn = i => { lines.push(String(i.pop())); };
+        const printFn = i => { lines.push(Tak.takFormat(i.pop())); };
         interp.defineWord('.', printFn);
         interp.defineWord('log', printFn);
         const tokens = Tak.tokenize(source);

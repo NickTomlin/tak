@@ -118,7 +118,7 @@
         Tak.registerStdlib(interp);
         Tak.registerDomStdlib(interp);
 
-        const printFn = i => { lines.push(String(i.pop())); };
+        const printFn = i => { lines.push(Tak.takFormat(i.pop())); };
         interp.defineWord('.', printFn);
         interp.defineWord('log', printFn);
 
@@ -138,7 +138,7 @@
           if (interp.stack.length > 0) {
             const stackLine = document.createElement('div');
             stackLine.className = 'out-stack';
-            stackLine.textContent = 'stack: [ ' + interp.stack.map(String).join(' ') + ' ]';
+            stackLine.textContent = 'stack: [ ' + interp.stack.map(Tak.takFormat).join(' ') + ' ]';
             output.appendChild(stackLine);
           }
         }
