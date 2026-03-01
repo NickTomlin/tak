@@ -493,17 +493,30 @@ export function registerStdlib(interp: TakInterpreter): void {
 
   interp.defineWord('await', async i => {
     const val = i.pop();
-    let resolved: unknown = val;
     if (val instanceof Promise) {
-      resolved = await val;
-    }
-    // If it's a Response, resolve to json
-    if (resolved instanceof Response) {
-      resolved = await resolved.json();
-      i.push(jsToTak(resolved));
+      const resolved = await val;
+      i.push(resolved as TakValue);
     } else {
-      i.push(jsToTak(resolved));
+      i.push(val);
     }
+  });
+
+  // response/json ( response -- dict )
+  // Reads a Response body as JSON and pushes the result as a tak value.
+  interp.defineWord('response/json', async i => {
+    const val = i.pop();
+    if (!(val instanceof Response)) throw new TakError('response/json: expected Response');
+    const data = await val.json();
+    i.push(jsToTak(data));
+  });
+
+  // response/text ( response -- str )
+  // Reads a Response body as plain text and pushes the string.
+  interp.defineWord('response/text', async i => {
+    const val = i.pop();
+    if (!(val instanceof Response)) throw new TakError('response/text: expected Response');
+    const text = await val.text();
+    i.push(text);
   });
 
   interp.defineWord('json/parse', i => {

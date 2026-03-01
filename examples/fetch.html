@@ -59,10 +59,7 @@ fn show ( str -- ) {
   "Fetching…" show
 
   // Fetch from a CORS-friendly joke API
-  "https://v2.jokeapi.dev/joke/Any?type=single" fetch await
-
-  // The interpreter's await word handles Response → JSON automatically
-  // result is a tak dict on the stack
+  "https://v2.jokeapi.dev/joke/Any?type=single" fetch await response/json
 
   // Extract the joke field
   "joke" get
