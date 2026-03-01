@@ -129,11 +129,31 @@ export function tokenize(source: string): Token[] {
       advance(); // consume (
       let depth = 1;
       let jsExpr = '';
+      let inStr = false;
+      let strChar = '';
       while (pos < source.length && depth > 0) {
         const c = advance();
-        if (c === '(') depth++;
-        else if (c === ')') { depth--; if (depth === 0) break; }
-        jsExpr += c;
+        if (inStr) {
+          jsExpr += c;
+          if (c === '\\' && pos < source.length) {
+            jsExpr += advance(); // consume escaped char verbatim
+          } else if (c === strChar) {
+            inStr = false;
+          }
+        } else if (c === '"' || c === "'") {
+          inStr = true;
+          strChar = c;
+          jsExpr += c;
+        } else if (c === '(') {
+          depth++;
+          jsExpr += c;
+        } else if (c === ')') {
+          depth--;
+          if (depth === 0) break; // closing ) not added to jsExpr
+          jsExpr += c;
+        } else {
+          jsExpr += c;
+        }
       }
       if (depth !== 0) throw new LexError('Unterminated @js(...)', startLine, startCol);
       tokens.push(makeToken('JS_EXPR', `@js(${jsExpr})`, jsExpr, startLine, startCol));
@@ -200,7 +220,7 @@ function isIdentCont(ch: string): boolean {
 }
 
 function isOperatorChar(ch: string): boolean {
-  return ch === '+' || ch === '*' || ch === '/' || ch === '%' || ch === '=' ||
+  return ch === '+' || ch === '-' || ch === '*' || ch === '/' || ch === '%' || ch === '=' ||
          ch === '<' || ch === '>' || ch === '!' || ch === '&' || ch === '|' ||
          ch === '^' || ch === '~' || ch === '#';
 }
