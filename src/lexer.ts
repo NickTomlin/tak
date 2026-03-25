@@ -15,6 +15,8 @@ export type TokenKind =
   | 'COLON'       // :
   | 'DASHDASH'    // --
   | 'FN'          // fn keyword
+  | 'USE'         // use keyword
+  | 'AS'          // as keyword (only valid in use binding lists)
   | 'JS_EXPR'     // @js(...)
   | 'EOF';
 
@@ -182,6 +184,8 @@ export function tokenize(source: string): Token[] {
 
       // Keywords
       if (ident === 'fn') { tokens.push(makeToken('FN', ident, 'fn', startLine, startCol)); continue; }
+      if (ident === 'use') { tokens.push(makeToken('USE', ident, 'use', startLine, startCol)); continue; }
+      if (ident === 'as') { tokens.push(makeToken('AS', ident, 'as', startLine, startCol)); continue; }
       if (ident === 'true') { tokens.push(makeToken('BOOL', ident, true, startLine, startCol)); continue; }
       if (ident === 'false') { tokens.push(makeToken('BOOL', ident, false, startLine, startCol)); continue; }
       if (ident === 'null') { tokens.push(makeToken('NULL', ident, null, startLine, startCol)); continue; }

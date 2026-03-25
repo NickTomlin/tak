@@ -7,7 +7,8 @@ export type AstNode =
   | DictLiteral
   | Literal
   | Word
-  | JsExpr;
+  | JsExpr
+  | Use;
 
 export interface Program {
   type: 'Program';
@@ -65,6 +66,22 @@ export interface JsExpr {
   type: 'JsExpr';
   /** raw JS source to eval */
   expr: string;
+  line: number;
+  col: number;
+}
+
+export interface UseBinding {
+  /** Name of the export in the module */
+  name: string;
+  /** Local word name to define (same as name if no `as`) */
+  alias: string;
+}
+
+export interface Use {
+  type: 'Use';
+  url: string;
+  /** null = push whole module onto stack; array = defineWord per binding */
+  bindings: UseBinding[] | null;
   line: number;
   col: number;
 }

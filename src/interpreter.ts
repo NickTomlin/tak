@@ -1,6 +1,23 @@
 // tak interpreter — tree-walking evaluator
 
-import { AstNode, Program, FnDef, Quotation, DictLiteral, Literal, Word, JsExpr } from './ast.js';
+import { AstNode, Program, FnDef, Quotation, DictLiteral, Literal, Word, JsExpr, Use } from './ast.js';
+
+// Dynamic import that bypasses bundler static analysis
+const _dynImport = new Function('u', 'return import(u)') as (u: string) => Promise<Record<string, unknown>>;
+
+function collectUseUrls(nodes: AstNode[]): string[] {
+  const urls: string[] = [];
+  for (const node of nodes) {
+    if (node.type === 'Use') {
+      urls.push(node.url);
+    } else if (node.type === 'FnDef') {
+      urls.push(...collectUseUrls(node.body));
+    } else if (node.type === 'Quotation') {
+      urls.push(...collectUseUrls(node.body));
+    }
+  }
+  return urls;
+}
 
 // ---------------------------------------------------------------------------
 // Value types
@@ -100,6 +117,9 @@ export class TakInterpreter extends TakEmitter {
   /** Debug mode flag */
   readonly debug: boolean;
 
+  /** Cache of pre-fetched modules keyed by URL */
+  private _moduleCache = new Map<string, Record<string, unknown>>();
+
   constructor(options: TakInterpreterOptions = {}) {
     super();
     this.debug = options.debug ?? false;
@@ -154,6 +174,15 @@ export class TakInterpreter extends TakEmitter {
   // -------------------------------------------------------------------------
 
   async run(program: Program): Promise<void> {
+    // Pre-fetch all Use node URLs concurrently before executing anything
+    const urls = [...new Set(collectUseUrls(program.body))];
+    const unfetched = urls.filter(u => !this._moduleCache.has(u));
+    if (unfetched.length > 0) {
+      await Promise.all(unfetched.map(async url => {
+        this._moduleCache.set(url, await _dynImport(url));
+      }));
+    }
+
     for (const node of program.body) {
       await this.eval(node);
     }
@@ -199,6 +228,10 @@ export class TakInterpreter extends TakEmitter {
 
       case 'JsExpr':
         await this.evalJsExpr(node);
+        break;
+
+      case 'Use':
+        await this.evalUse(node);
         break;
 
       default:
@@ -274,6 +307,31 @@ export class TakInterpreter extends TakEmitter {
       result = await result;
     }
     this.push(result as TakValue);
+  }
+
+  // -------------------------------------------------------------------------
+  // Use: static import (pre-fetched in run())
+  // -------------------------------------------------------------------------
+
+  private async evalUse(node: Use): Promise<void> {
+    const mod = this._moduleCache.get(node.url);
+    if (!mod) {
+      throw new TakError(`Module not pre-fetched: ${node.url}`, 'use', [...this._stack]);
+    }
+
+    if (node.bindings === null) {
+      // Push the whole module object as a TakJS value
+      this.push({ kind: 'js', value: mod } as TakJS);
+    } else {
+      // Define a word per binding that pushes the exported value
+      for (const { name, alias } of node.bindings) {
+        if (!(name in mod)) {
+          throw new TakError(`Module "${node.url}" has no export "${name}"`, 'use', [...this._stack]);
+        }
+        const val: TakJS = { kind: 'js', value: mod[name] };
+        this.defineWord(alias, i => i.push(val));
+      }
+    }
   }
 
   // -------------------------------------------------------------------------

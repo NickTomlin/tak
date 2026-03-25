@@ -3,7 +3,7 @@
 import { Token, TokenKind } from './lexer.js';
 import {
   AstNode, Program, FnDef, Quotation, DictLiteral, Literal, Word, JsExpr,
-  StackEffect, DictEntry,
+  StackEffect, DictEntry, Use, UseBinding,
 } from './ast.js';
 
 export class ParseError extends Error {
@@ -49,6 +49,16 @@ export function parse(tokens: Token[]): Program {
     }
     if (t.kind === 'STRING') {
       advance();
+      // Static import: "url" use  or  "url" [ bindings ] use
+      if (at('USE')) {
+        advance(); // consume use
+        return { type: 'Use', url: t.value as string, bindings: null, line: t.line, col: t.col } satisfies Use;
+      }
+      if (at('LBRACKET') && isUseBindingList()) {
+        const bindings = parseUseBindings();
+        expect('USE');
+        return { type: 'Use', url: t.value as string, bindings, line: t.line, col: t.col } satisfies Use;
+      }
       return { type: 'Literal', value: t.value as string, line: t.line, col: t.col } satisfies Literal;
     }
     if (t.kind === 'BOOL') {
@@ -101,6 +111,42 @@ export function parse(tokens: Token[]): Program {
     }
 
     throw new ParseError(`Unexpected token: ${t.kind} (${String(t.raw)})`, t.line, t.col);
+  }
+
+  /** Scan ahead from current LBRACKET to see if it's a use binding list followed by USE */
+  function isUseBindingList(): boolean {
+    const saved = pos;
+    pos++; // skip [
+    while (pos < tokens.length) {
+      const tk = tokens[pos];
+      if (tk.kind === 'RBRACKET') break;
+      if (tk.kind === 'IDENT' || tk.kind === 'AS') { pos++; continue; }
+      pos = saved;
+      return false;
+    }
+    if (tokens[pos]?.kind !== 'RBRACKET') { pos = saved; return false; }
+    pos++; // skip ]
+    const result = tokens[pos]?.kind === 'USE';
+    pos = saved;
+    return result;
+  }
+
+  function parseUseBindings(): UseBinding[] {
+    expect('LBRACKET');
+    const bindings: UseBinding[] = [];
+    while (!at('RBRACKET') && !at('EOF')) {
+      const nameTok = expect('IDENT');
+      const name = nameTok.value as string;
+      if (at('AS')) {
+        advance(); // consume as
+        const aliasTok = expect('IDENT');
+        bindings.push({ name, alias: aliasTok.value as string });
+      } else {
+        bindings.push({ name, alias: name });
+      }
+    }
+    expect('RBRACKET');
+    return bindings;
   }
 
   function isDictLiteral(): boolean {

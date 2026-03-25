@@ -107,7 +107,7 @@ true [ "yes" . ] when
 | Word | Effect |
 |------|--------|
 | `concat` | `( str str -- str )` |
-| `length` | `( str -- n )` |
+| `length` | `( str\|arr -- n )` |
 | `substr` | `( str start end -- str )` |
 | `split` | `( str sep -- arr )` |
 
@@ -149,12 +149,50 @@ true [ "yes" . ] when
 - `number?  string?  bool?  array?  dict?  null?  quot?`
 
 ### Async / Fetch
+| Word | Effect | Description |
+|------|--------|-------------|
+| `fetch` | `( url -- Promise )` | HTTP GET |
+| `fetch-post` | `( url body -- Promise )` | HTTP POST; body can be string or dict |
+| `await` | `( Promise -- val )` | Resolve a promise |
+| `response/json` | `( Response -- val )` | Read response body as JSON → tak value |
+| `response/text` | `( Response -- str )` | Read response body as plain text |
+| `json/parse` | `( str -- val )` | Parse a JSON string |
+| `json/str` | `( val -- str )` | Serialize a tak value to JSON |
+
 ```
-"https://example.com/api" fetch await   // fetch + await → tak dict
-"https://example.com/api" { body: "x" } fetch-post await
+"https://example.com/api" fetch await response/json   // → tak dict/array
+"https://example.com/api" fetch await response/text   // → string
+"https://example.com/api" { x: 1 } fetch-post await response/json
 '{"x":1}' json/parse
 { x: 1 } json/str
 ```
+
+### JS Interop
+| Word | Effect | Description |
+|------|--------|-------------|
+| `import` | `( url -- Promise )` | Dynamic JS module import (async; use `await`) |
+| `js/get` | `( js key -- val )` | Read a property from a JS object |
+| `js/call` | `( js arg1..argN n -- result )` | Call a JS function with N args |
+| `js/unwrap` | `( js -- val )` | Convert a JS value to a tak value |
+
+```
+"https://cdn.example.com/lib.js" import await   // ( -- js-module )
+"Chart" js/get                                   // ( js-module -- Chart )
+0 js/call                                        // call with 0 args
+```
+
+### Static Imports (`use`)
+
+`use` is a hoisted import — all URLs are fetched concurrently before the program runs, with results available synchronously at the call site.
+
+```
+"./lib.js" use                           ( -- module )
+"./lib.js" [ Chart ] use                 // defines word `Chart`
+"./lib.js" [ renderFn as render ] use    // defines word `render`
+"./lib.js" [ Chart renderFn as render ] use
+```
+
+The URL must be a string literal (known at parse time). Without a binding list, the whole module is pushed onto the stack. With bindings, each named export becomes a word that pushes its value.
 
 ### Debug
 - `trace` — log top value without consuming it
