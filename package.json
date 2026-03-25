@@ -1,11 +1,15 @@
 {
   "name": "tak",
   "version": "0.1.0",
-  "description": "tak — a stack-based language for the browser",
+  "description": "tak — a stack-based language for the browser and command line",
   "main": "dist/tak.js",
+  "bin": {
+    "tak": "./dist/cli.js"
+  },
   "scripts": {
     "build": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak",
     "build:dev": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap",
+    "build:cli": "esbuild src/cli.ts --bundle --outfile=dist/cli.js --platform=node --format=cjs --banner:js=\"globalThis.Element = globalThis.Element || class Element {};\" && chmod +x dist/cli.js",
     "watch": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap --watch",
     "typecheck": "tsc --noEmit",
     "serve": "npx serve ."
