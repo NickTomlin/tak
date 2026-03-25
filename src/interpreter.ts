@@ -23,6 +23,11 @@ export interface TakQuot {
   interp: TakInterpreter;
 }
 
+export interface TakJS {
+  kind: 'js';
+  value: unknown;
+}
+
 export type TakValue =
   | number
   | string
@@ -31,6 +36,7 @@ export type TakValue =
   | TakArray
   | TakDict
   | TakQuot
+  | TakJS
   | Element;
 
 export type TakWord = (interp: TakInterpreter) => Promise<void> | void;

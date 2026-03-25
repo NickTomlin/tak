@@ -1,6 +1,6 @@
 // tak standard library — registerStdlib(interp)
 
-import { TakInterpreter, TakValue, TakArray, TakDict, TakQuot, TakError } from './interpreter.js';
+import { TakInterpreter, TakValue, TakArray, TakDict, TakQuot, TakJS, TakError } from './interpreter.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -43,8 +43,26 @@ function isTakQuot(v: TakValue): v is TakQuot {
   return typeof v === 'object' && v !== null && !isElement(v) && (v as TakQuot).kind === 'quot';
 }
 
+function isTakJS(v: TakValue): v is TakJS {
+  return typeof v === 'object' && v !== null && !isElement(v) && (v as TakJS).kind === 'js';
+}
+
+function assertTakJS(v: TakValue, word: string): TakJS {
+  if (!isTakJS(v)) throw new TakError(`${word}: expected js value, got ${takType(v)}`);
+  return v;
+}
+
 function isElement(v: TakValue): v is Element {
   return typeof v === 'object' && v !== null && v instanceof Element;
+}
+
+/** Wrap a raw JS value as a TakValue. Primitives pass through; Promises stay as Promises
+ *  (so `await` resolves them); everything else becomes TakJS. */
+function wrapJsValue(v: unknown): TakValue {
+  if (v === null || v === undefined) return null;
+  if (typeof v === 'number' || typeof v === 'string' || typeof v === 'boolean') return v;
+  if (v instanceof Promise) return v as unknown as TakValue;
+  return { kind: 'js', value: v };
 }
 
 export function takType(v: TakValue): string {
@@ -55,6 +73,7 @@ export function takType(v: TakValue): string {
   if (isTakArray(v)) return 'array';
   if (isTakDict(v)) return 'dict';
   if (isTakQuot(v)) return 'quot';
+  if (isTakJS(v)) return 'js';
   if (isElement(v)) return 'element';
   return 'unknown';
 }
@@ -547,6 +566,53 @@ export function registerStdlib(interp: TakInterpreter): void {
     i.emit('debug', { stack: i.stack });
     console.log('[debug] stack:', i.stack.map(takFormat));
   });
+
+  // -------------------------------------------------------------------------
+  // JS interop
+  // -------------------------------------------------------------------------
+
+  // Indirect dynamic import — prevents bundlers from statically analysing the specifier
+  const _dynamicImport = new Function('s', 'return import(s)') as (s: string) => Promise<unknown>;
+
+  // import ( url:string -- Promise<TakJS> )
+  interp.defineWord('import', i => {
+    const url = assertString(i.pop(), 'import');
+    const promise = _dynamicImport(url).then(mod => ({ kind: 'js', value: mod } as TakJS));
+    i.push(promise as unknown as TakValue);
+  });
+
+  // js/get ( obj:TakJS key:string -- value )
+  // Reads a property from a JS object. Primitives auto-convert; objects become TakJS.
+  interp.defineWord('js/get', i => {
+    const key = assertString(i.pop(), 'js/get');
+    const obj = assertTakJS(i.pop(), 'js/get');
+    i.push(wrapJsValue((obj.value as Record<string, unknown>)[key]));
+  });
+
+  // js/call ( fn:TakJS arg1 ... argN N:number -- result )
+  // Calls a JS function with N arguments popped from the stack.
+  // If the function returns a Promise, wraps the resolved value so `await` gets a TakValue.
+  interp.defineWord('js/call', i => {
+    const n = assertNumber(i.pop(), 'js/call');
+    const args: unknown[] = [];
+    for (let j = 0; j < n; j++) args.unshift(takToJs(i.pop()));
+    const fn = assertTakJS(i.pop(), 'js/call');
+    if (typeof fn.value !== 'function') throw new TakError('js/call: value is not a function');
+    const result = (fn.value as (...a: unknown[]) => unknown)(...args);
+    if (result instanceof Promise) {
+      i.push(result.then(wrapJsValue) as unknown as TakValue);
+    } else {
+      i.push(wrapJsValue(result));
+    }
+  });
+
+  // js/unwrap ( v:TakJS -- TakValue )
+  // Explicitly converts a TakJS value to a tak value using jsToTak
+  // (e.g. string[] → TakArray, plain object → TakDict).
+  interp.defineWord('js/unwrap', i => {
+    const v = assertTakJS(i.pop(), 'js/unwrap');
+    i.push(jsToTak(v.value));
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -563,6 +629,7 @@ export function takFormat(v: TakValue): string {
     return `{ ${pairs.join(', ')} }`;
   }
   if (isTakQuot(v)) return `[ <quot> ]`;
+  if (isTakJS(v)) return `[js ${typeof v.value}]`;
   if (v instanceof Element) return `<${v.tagName.toLowerCase()}>`;
   return String(v);
 }
@@ -576,6 +643,7 @@ export function takToJs(v: TakValue): unknown {
     for (const [k, val] of v.map) obj[k] = takToJs(val);
     return obj;
   }
+  if (isTakJS(v)) return v.value;
   return null;
 }
 
@@ -583,6 +651,7 @@ export function takToJs(v: TakValue): unknown {
 export function jsToTak(v: unknown): TakValue {
   if (v === null || v === undefined) return null;
   if (typeof v === 'number' || typeof v === 'string' || typeof v === 'boolean') return v;
+  if (typeof v === 'function') return { kind: 'js', value: v };
   if (Array.isArray(v)) return { kind: 'array', items: v.map(jsToTak) };
   if (typeof v === 'object') {
     const map = new Map<string, TakValue>();

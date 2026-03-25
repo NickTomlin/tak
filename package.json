@@ -14,10 +14,15 @@
     "typecheck": "tsc --noEmit",
     "serve": "npx serve ."
   },
-  "keywords": ["stack-based", "language", "browser"],
+  "keywords": [
+    "stack-based",
+    "language",
+    "browser"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^25.5.0",
     "esbuild": "^0.24.0",
     "typescript": "^5.7.0"
   }
