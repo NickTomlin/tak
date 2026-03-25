@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tak — test harness</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      background: #1a1a2e;
+      color: #d4f4d4;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    nav {
+      padding: 0.5rem 1rem;
+      background: rgba(40,80,40,0.4);
+      border-bottom: 1px solid #40a040;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-shrink: 0;
+    }
+    nav .brand { color: #80ff80; font-weight: bold; font-size: 1.1rem; }
+    nav a { color: #a0d4a0; text-decoration: none; font-size: 0.85rem; }
+    nav a:hover { color: #80ff80; }
+    main { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+    h2 { color: #80ff80; margin: 0; font-size: 1rem; letter-spacing: 0.05em; }
+    .add-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid #2a4a2a;
+      border-radius: 4px;
+      padding: 0.75rem;
+    }
+    .add-form label { color: rgba(180,255,180,0.6); font-size: 0.78rem; margin-bottom: 2px; display: block; }
+    .add-form textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      color: #d4f4d4;
+      border: 1px solid #40a040;
+      border-radius: 3px;
+      padding: 0.4rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+      resize: vertical;
+    }
+    .add-form textarea:focus { border-color: #80ff80; }
+    .add-form-actions { grid-column: 1 / -1; display: flex; gap: 0.5rem; }
+    .toolbar { display: flex; gap: 0.5rem; align-items: center; }
+    button {
+      background: #1a3a1a;
+      color: #80ff80;
+      border: 1px solid #40a040;
+      border-radius: 4px;
+      padding: 0.35rem 1rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    button:hover { background: #2a4a2a; }
+    button.danger { border-color: #804040; color: #ff8080; }
+    button.danger:hover { background: #3a1a1a; }
+    #summary { font-size: 0.85rem; color: rgba(180,255,180,0.5); }
+    #results { display: flex; flex-direction: column; gap: 0.5rem; }
+    .test-card {
+      border: 1px solid #2a4a2a;
+      border-radius: 4px;
+      padding: 0.6rem 0.75rem;
+      display: grid;
+      grid-template-columns: 1.5rem 1fr auto;
+      gap: 0.5rem;
+      align-items: start;
+    }
+    .test-card.pass { border-color: #3a6a3a; }
+    .test-card.fail { border-color: #6a3a3a; }
+    .status { font-size: 1.1rem; line-height: 1.4; }
+    .status.pass { color: #60d060; }
+    .status.fail { color: #ff6060; }
+    .status.pending { color: rgba(180,255,180,0.3); }
+    .test-body { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+    .test-snippet { color: #a0d4a0; font-size: 0.82rem; white-space: pre-wrap; word-break: break-all; }
+    .test-expected { color: rgba(180,255,180,0.5); font-size: 0.78rem; white-space: pre-wrap; }
+    .test-actual { color: #ff9090; font-size: 0.78rem; white-space: pre-wrap; }
+    .test-remove { background: none; border: none; color: rgba(180,100,100,0.4); cursor: pointer; padding: 0; font-size: 0.9rem; line-height: 1; }
+    .test-remove:hover { color: #ff6060; background: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <span class="brand">tak</span>
+    <a href="../">repl</a>
+    <a href="../examples/counter.html">counter</a>
+    <a href="../examples/hello.html">hello</a>
+    <a href="../examples/fetch.html">fetch</a>
+  </nav>
+  <main>
+    <h2>test harness</h2>
+
+    <div class="add-form">
+      <div>
+        <label>tak snippet</label>
+        <textarea id="new-snippet" rows="3" placeholder="1 2 + ."></textarea>
+      </div>
+      <div>
+        <label>expected output</label>
+        <textarea id="new-expected" rows="3" placeholder="3"></textarea>
+      </div>
+      <div class="add-form-actions">
+        <button id="add-btn">Add test</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button id="run-all-btn">Run all</button>
+      <button id="clear-btn" class="danger">Clear all</button>
+      <span id="summary"></span>
+    </div>
+
+    <div id="results"></div>
+  </main>
+
+  <script src="../dist/tak.js"></script>
+  <script>
+    const SEED_TESTS = [
+      { snippet: '1 2 + .', expected: '3' },
+      { snippet: '"hello" " " concat "world" concat .', expected: 'hello world' },
+      { snippet: 'true false or .', expected: 'true' },
+      { snippet: '5 dup * .', expected: '25' },
+      { snippet: '[ 1 2 3 ] 0 [ + ] reduce .', expected: '6' },
+      { snippet: '3 [ dup . ] times', expected: '3\n3\n3' },
+    ];
+
+    let tests = SEED_TESTS.map(t => ({ ...t, status: null, actual: null }));
+
+    async function runSnippet(source) {
+      const lines = [];
+      try {
+        const interp = new Tak.TakInterpreter();
+        Tak.registerStdlib(interp);
+        const printFn = i => { lines.push(Tak.takFormat(i.pop())); };
+        interp.defineWord('.', printFn);
+        interp.defineWord('log', printFn);
+        const tokens = Tak.tokenize(source);
+        const program = Tak.parse(tokens);
+        await interp.run(program);
+        return { output: lines.join('\n'), error: null };
+      } catch (err) {
+        return { output: lines.join('\n'), error: err instanceof Error ? err.message : String(err) };
+      }
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function render() {
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+
+      for (let i = 0; i < tests.length; i++) {
+        const t = tests[i];
+        const statusClass = t.status ?? 'pending';
+        const statusSym = t.status === 'pass' ? '✓' : t.status === 'fail' ? '✗' : '·';
+        const failDetail = t.status === 'fail'
+          ? `<div class="test-actual">actual:   ${escHtml(t.actual ?? '')}</div>`
+          : '';
+
+        const card = document.createElement('div');
+        card.className = `test-card ${statusClass}`;
+        card.innerHTML = `
+          <span class="status ${escHtml(statusClass)}">${escHtml(statusSym)}</span>
+          <div class="test-body">
+            <div class="test-snippet">${escHtml(t.snippet)}</div>
+            <div class="test-expected">expected: ${escHtml(t.expected)}</div>
+            ${failDetail}
+          </div>
+          <button class="test-remove" data-idx="${i}" title="Remove">&#x2715;</button>
+        `;
+        container.appendChild(card);
+      }
+
+      const ran = tests.filter(t => t.status);
+      const passed = tests.filter(t => t.status === 'pass').length;
+      const failed = tests.filter(t => t.status === 'fail').length;
+      document.getElementById('summary').textContent =
+        ran.length ? `${passed} passed, ${failed} failed` : '';
+    }
+
+    document.getElementById('add-btn').addEventListener('click', () => {
+      const snippet = document.getElementById('new-snippet').value.trim();
+      const expected = document.getElementById('new-expected').value;
+      if (!snippet) return;
+      tests.push({ snippet, expected, status: null, actual: null });
+      document.getElementById('new-snippet').value = '';
+      document.getElementById('new-expected').value = '';
+      render();
+    });
+
+    document.getElementById('run-all-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('run-all-btn');
+      btn.disabled = true;
+      try {
+        for (const t of tests) {
+          const { output, error } = await runSnippet(t.snippet);
+          if (error) {
+            t.status = 'fail';
+            t.actual = 'ERROR: ' + error;
+          } else {
+            t.actual = output;
+            t.status = output === t.expected ? 'pass' : 'fail';
+          }
+        }
+      } finally {
+        btn.disabled = false;
+        render();
+      }
+    });
+
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      tests = SEED_TESTS.map(t => ({ ...t, status: null, actual: null }));
+      render();
+    });
+
+    document.getElementById('results').addEventListener('click', e => {
+      const btn = e.target.closest('[data-idx]');
+      if (!btn) return;
+      tests.splice(Number(btn.dataset.idx), 1);
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

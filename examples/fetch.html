@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tak — async fetch</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #1a1a2e;
+      color: #d4f4d4;
+      padding: 2rem;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    h1 { color: #80ff80; }
+    #output {
+      background: #0d0d1a;
+      border-left: 3px solid #40a040;
+      padding: 1rem;
+      border-radius: 4px;
+      min-height: 60px;
+      white-space: pre-wrap;
+    }
+    button {
+      font-family: monospace;
+      font-size: 1rem;
+      padding: 0.4rem 1.2rem;
+      background: #1a3a1a;
+      color: #80ff80;
+      border: 1px solid #40a040;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+    button:hover { background: #2a4a2a; }
+  </style>
+</head>
+<body>
+  <h1>tak — async fetch</h1>
+  <p>Fetches a random joke from a public API and displays it.</p>
+  <button id="fetch-btn">Fetch a joke</button>
+  <div id="output">Click the button to fetch a joke…</div>
+
+  <!-- data-debug="true" shows the stack overlay -->
+  <script src="../dist/tak.js" data-debug="true"></script>
+  <script type="text/tak">
+// Helper: display a message in the output div
+fn show ( str -- ) {
+  "#output" dom/query swap dom/text drop
+}
+
+// Wire up the fetch button
+"#fetch-btn" dom/query
+"click"
+[
+  drop  // discard element
+
+  "Fetching…" show
+
+  // Fetch from a CORS-friendly joke API
+  "https://v2.jokeapi.dev/joke/Any?type=single" fetch await response/json
+
+  // Extract the joke field
+  "joke" get
+
+  // Display it
+  show
+]
+dom/on drop
+
+"Fetch example ready. Click the button!" .
+  </script>
+</body>
+</html>
