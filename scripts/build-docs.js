@@ -183,16 +183,15 @@ const CSS = `
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root {
-  --bg:       #0f1117;
-  --bg-side:  #141820;
-  --bg-code:  #0a0d12;
-  --fg:       #c8dfc8;
-  --fg-muted: #6a8c6a;
-  --accent:   #7ae07a;
-  --accent2:  #3a8a3a;
-  --border:   #1e2e1e;
-  --side-w:   220px;
-  --max-w:    860px;
+  --bg:       #faf8f3;
+  --bg-side:  #f3efe6;
+  --bg-code:  #edeae2;
+  --fg:       #2a2218;
+  --fg-muted: #7a6e60;
+  --accent:   #8b3a12;
+  --border:   #ddd8cc;
+  --side-w:   230px;
+  --max-w:    720px;
 }
 
 html { scroll-behavior: smooth; }
@@ -200,9 +199,9 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--fg);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  font-size: 15px;
-  line-height: 1.7;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 17px;
+  line-height: 1.75;
   display: flex;
   min-height: 100vh;
 }
@@ -213,7 +212,7 @@ body {
   min-width: var(--side-w);
   background: var(--bg-side);
   border-right: 1px solid var(--border);
-  padding: 1.5rem 0;
+  padding: 2rem 0;
   position: sticky;
   top: 0;
   height: 100vh;
@@ -223,38 +222,39 @@ body {
 
 #sidebar .logo {
   display: block;
-  padding: 0 1.2rem 1.2rem;
-  font-family: monospace;
-  font-size: 1.3rem;
-  font-weight: bold;
+  padding: 0 1.4rem 1.2rem;
+  font-family: Georgia, serif;
+  font-size: 1.5rem;
+  font-style: italic;
   color: var(--accent);
   border-bottom: 1px solid var(--border);
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
   text-decoration: none;
+  letter-spacing: 0.02em;
 }
 
 nav ul { list-style: none; }
 
 nav > ul > li > a {
   display: block;
-  padding: 0.3rem 1.2rem;
+  padding: 0.28rem 1.4rem;
   color: var(--fg);
   text-decoration: none;
-  font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 0.03em;
+  font-size: 0.88rem;
+  font-family: Georgia, serif;
 }
 
 nav > ul > li > a:hover { color: var(--accent); }
 
-nav > ul > li > ul { margin-bottom: 0.4rem; }
+nav > ul > li > ul { margin-bottom: 0.5rem; }
 
 nav > ul > li > ul > li > a {
   display: block;
-  padding: 0.18rem 1.2rem 0.18rem 2rem;
+  padding: 0.15rem 1.4rem 0.15rem 2.2rem;
   color: var(--fg-muted);
   text-decoration: none;
   font-size: 0.82rem;
+  font-family: "SFMono-Regular", Consolas, monospace;
 }
 
 nav > ul > li > ul > li > a:hover { color: var(--accent); }
@@ -262,65 +262,83 @@ nav > ul > li > ul > li > a:hover { color: var(--accent); }
 /* ── Main ── */
 main {
   flex: 1;
-  padding: 2.5rem 2rem 4rem;
-  max-width: calc(var(--max-w) + 4rem);
+  padding: 3rem 3rem 5rem;
+  max-width: calc(var(--max-w) + 6rem);
   min-width: 0;
 }
 
 /* ── Typography ── */
-h1 { font-size: 2rem; color: var(--accent); margin-bottom: 0.4rem; }
+h1 {
+  font-size: 2.6rem;
+  font-weight: normal;
+  font-style: italic;
+  color: var(--fg);
+  margin-bottom: 0.3rem;
+  letter-spacing: -0.01em;
+}
 h1 a { color: inherit; text-decoration: none; }
 
 h2 {
-  font-size: 1.3rem;
-  color: var(--accent);
-  margin: 2.5rem 0 0.8rem;
-  padding-bottom: 0.4rem;
+  font-size: 1.4rem;
+  font-weight: normal;
+  font-style: italic;
+  color: var(--fg);
+  margin: 3rem 0 0.9rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--border);
+  letter-spacing: 0.01em;
 }
 h2 a { color: inherit; text-decoration: none; }
 
 h3 {
-  font-size: 1rem;
+  font-size: 0.92rem;
+  font-weight: bold;
+  font-style: normal;
+  font-family: "SFMono-Regular", Consolas, monospace;
   color: var(--accent);
-  margin: 1.6rem 0 0.5rem;
-  font-family: monospace;
+  margin: 2rem 0 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 h3 a { color: inherit; text-decoration: none; }
 
-h4 { font-size: 0.9rem; color: var(--fg-muted); margin: 1rem 0 0.4rem; }
+h4 {
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--fg-muted);
+  margin: 1.2rem 0 0.4rem;
+}
 
-p { margin-bottom: 0.9rem; }
+p { margin-bottom: 1rem; }
 
-a { color: var(--accent2); }
-a:hover { color: var(--accent); }
+a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { text-decoration: none; }
 
-strong { color: var(--fg); }
+strong { font-weight: bold; }
 
 /* ── Code ── */
 code {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 0.85em;
+  font-size: 0.82em;
   background: var(--bg-code);
   color: var(--accent);
   padding: 0.1em 0.35em;
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 pre {
   background: var(--bg-code);
-  border-left: 3px solid var(--accent2);
-  border-radius: 0 6px 6px 0;
-  padding: 1rem 1.2rem;
+  border-left: 2px solid var(--accent);
+  padding: 1.1rem 1.4rem;
   overflow-x: auto;
-  margin: 0.8rem 0 1.2rem;
+  margin: 0.9rem 0 1.4rem;
 }
 
 pre code {
   background: none;
   color: var(--fg);
   padding: 0;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   border-radius: 0;
 }
 
@@ -328,36 +346,38 @@ pre code {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0.6rem 0 1.2rem;
+  margin: 0.6rem 0 1.4rem;
   font-size: 0.88rem;
+  font-family: "SFMono-Regular", Consolas, monospace;
 }
 
 th {
   text-align: left;
-  padding: 0.45rem 0.8rem;
-  background: var(--bg-side);
+  padding: 0.5rem 0.9rem;
   color: var(--fg-muted);
-  font-weight: 600;
-  border-bottom: 2px solid var(--border);
-  letter-spacing: 0.03em;
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--fg-muted);
 }
 
 td {
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 0.9rem;
   border-bottom: 1px solid var(--border);
   vertical-align: top;
 }
 
 tr:last-child td { border-bottom: none; }
-td:first-child code { color: var(--accent); }
+td:first-child code { color: var(--accent); font-weight: bold; }
 
 /* ── Lists ── */
 ul {
-  padding-left: 1.4rem;
-  margin-bottom: 0.9rem;
+  padding-left: 1.6rem;
+  margin-bottom: 1rem;
 }
 
-ul li { margin-bottom: 0.2rem; }
+ul li { margin-bottom: 0.3rem; }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
