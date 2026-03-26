@@ -6,10 +6,59 @@ The name means "thank you" in Danish — a tribute to the language hackers who c
 
 ---
 
-## Quick Start
+## A Taste of tak
+
+In tak, values are pushed onto a stack and words consume and produce them. A program is a
+sequence of values and words — there are no variables, only the stack.
+
+```
+// Push two numbers and add them
+3 4 +           // stack: [ 7 ]
+dup *           // stack: [ 49 ]  (square it)
+
+// Functions are defined with a stack effect annotation
+fn factorial ( n -- n ) {
+  dup 1 > [ dup 1 - factorial * ] [ drop 1 ] if
+}
+
+5 factorial .   // prints 120
+
+// Quotations are first-class — deferred sequences of words
+[ 1 2 3 4 5 ] [ dup * ] map .   // prints [ 1 4 9 16 25 ]
+
+// Fetch data, parse it, work with the result
+"https://api.example.com/data" fetch await response/json
+"results" get 0 nth "name" get .
+```
+
+Embed it in any page — no install required:
 
 ```html
-<script src="tak.js"></script>
+<!-- via CDN -->
+<script type="module" src="https://esm.sh/tak"></script>
+<script type="text/tak">
+  fn greet ( str -- ) { "Hello, " swap concat . }
+  "World" greet
+</script>
+```
+
+---
+
+## Quick Start
+
+Load tak from a CDN — no build step, no install:
+
+```html
+<!-- ESM via esm.sh -->
+<script type="module" src="https://esm.sh/tak"></script>
+
+<!-- or classic script via unpkg -->
+<script src="https://unpkg.com/tak/dist/tak.js"></script>
+```
+
+Then write tak inline:
+
+```html
 <script type="text/tak">
   fn greet ( str -- ) { "Hello, " swap concat . }
   "World" greet
@@ -19,7 +68,7 @@ The name means "thank you" in Danish — a tribute to the language hackers who c
 Enable the live debug panel (floating stack overlay):
 
 ```html
-<script src="tak.js" data-debug="true"></script>
+<script type="module" src="https://esm.sh/tak" data-debug="true"></script>
 ```
 
 ---

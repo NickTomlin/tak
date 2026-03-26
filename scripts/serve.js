@@ -10,7 +10,7 @@ const fs   = require('node:fs');
 const path = require('node:path');
 
 const root = path.join(__dirname, '..');
-const PORT = Number(process.argv[2] || process.env.PORT || 3000);
+const PORT = Number(process.argv[2] || process.env.PORT || 8080);
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',

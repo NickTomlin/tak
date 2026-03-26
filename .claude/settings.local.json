@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(git add:*)",
+      "Bash(node:*)",
+      "Bash(git:*)",
+      "Bash(npm test:*)",
+      "Bash(grep:*)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(printf \"\\\\nexit code: %d\\\\n\" $?)",
+      "Bash(printf 'exit: %d\\\\n' $?)",
+      "Bash(EC=$?)",
+      "Bash(printf 'exit: %d\\\\n' $EC)",
+      "Bash(npm install:*)"
+    ]
+  }
+}
