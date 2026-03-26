@@ -12,7 +12,8 @@
     "build:cli": "esbuild src/cli.ts --bundle --outfile=dist/cli.js --platform=node --format=cjs --banner:js=\"globalThis.Element = globalThis.Element || class Element {};\" && chmod +x dist/cli.js",
     "watch": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap --watch",
     "typecheck": "tsc --noEmit",
-    "serve": "npx serve ."
+    "docs": "node scripts/build-docs.js",
+    "serve": "node scripts/serve.js"
   },
   "keywords": [
     "stack-based",
