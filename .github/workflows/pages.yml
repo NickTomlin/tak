@@ -39,7 +39,11 @@ jobs:
           mkdir -p site/dist site/examples
           cp docs/index.html site/index.html
           cp dist/tak.js site/dist/tak.js
+          cp dist/tak.min.js site/dist/tak.min.js
+          cp dist/tak.min.js.map site/dist/tak.min.js.map
           cp dist/tak.esm.js site/dist/tak.esm.js
+          cp dist/tak.esm.min.js site/dist/tak.esm.min.js
+          cp dist/tak.esm.min.js.map site/dist/tak.esm.min.js.map
           cp examples/*.html site/examples/
 
       - uses: actions/upload-pages-artifact@v3

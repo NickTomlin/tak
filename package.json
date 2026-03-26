@@ -3,19 +3,20 @@
   "version": "0.1.0",
   "description": "tak — a stack-based language for the browser and command line",
   "main": "dist/tak.js",
-  "module": "dist/tak.esm.js",
+  "module": "dist/tak.esm.min.js",
   "exports": {
     ".": {
-      "import": "./dist/tak.esm.js",
-      "require": "./dist/tak.js"
+      "import": "./dist/tak.esm.min.js",
+      "require": "./dist/tak.min.js"
     }
   },
   "bin": {
     "tak": "./dist/cli.js"
   },
   "scripts": {
-    "build": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak && npm run build:esm",
-    "build:esm": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.esm.js --platform=browser --format=esm",
+    "build": "npm run build:iife && npm run build:esm",
+    "build:iife": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak && esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.min.js --platform=browser --format=iife --global-name=Tak --minify --sourcemap",
+    "build:esm": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.esm.js --platform=browser --format=esm && esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.esm.min.js --platform=browser --format=esm --minify --sourcemap",
     "build:dev": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap",
     "build:cli": "esbuild src/cli.ts --bundle --outfile=dist/cli.js --platform=node --format=cjs --banner:js=\"globalThis.Element = globalThis.Element || class Element {};\" && chmod +x dist/cli.js",
     "watch": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap --watch",
