@@ -22,6 +22,7 @@
     "watch": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap --watch",
     "typecheck": "tsc --noEmit",
     "docs": "node scripts/build-docs.js",
+    "build:docs": "npm run build && npm run docs",
     "serve": "node scripts/serve.js",
     "release": "release-it"
   },
