@@ -22,10 +22,10 @@
   </aside>
   <main>
     <h1 id="tak"><a href="#tak">tak</a></h1>
-    <p><strong>tak</strong> is a small stack-based language that runs in the browser. Inspired by Factor's quotation model, PostScript's dictionary flavor, and a desire for maximum debuggability. The name means "thank you" in Danish — a tribute to the language hackers who came before.</p>
+    <p><strong>tak</strong> is a small stack-based language that runs in the browser. Inspired by Factor's quotation model and PostScript's dictionary flavor. The name is Danish for "thank you".</p>
 
     <h2 id="a-taste-of-tak"><a href="#a-taste-of-tak">A Taste of tak</a></h2>
-    <p>Values are pushed onto a stack and words consume and produce them. No variables — only the stack.</p>
+    <p>Values are pushed onto a stack and words consume and produce them. There are no variables.</p>
     <pre><code>3 4 + dup *   // stack: [ 49 ]
 
 fn factorial ( n -- n ) {
@@ -39,7 +39,7 @@ fn factorial ( n -- n ) {
 "results" get 0 nth "name" get .</code></pre>
 
     <h2 id="quick-start"><a href="#quick-start">Quick Start</a></h2>
-    <p>Load tak from a CDN — no build step, no install:</p>
+    <p>Load tak from a CDN:</p>
     <pre><code>&lt;!-- ESM via esm.sh --&gt;
 &lt;script type="module" src="https://esm.sh/@nicktomlin/tak"&gt;&lt;/script&gt;
 
@@ -54,7 +54,7 @@ fn factorial ( n -- n ) {
     <pre><code>&lt;script type="module" src="https://esm.sh/@nicktomlin/tak" data-debug="true"&gt;&lt;/script&gt;</code></pre>
 
     <h2 id="playground"><a href="#playground">Playground</a></h2>
-    <p>Try tak right here. Press <strong>Ctrl+Enter</strong> (or click Run) to execute.</p>
+    <p>Ctrl+Enter to run.</p>
     <div class="playground-wrap">
       <textarea id="tak-input" spellcheck="false">// Basic arithmetic
 3 4 + .
@@ -63,7 +63,7 @@ fn factorial ( n -- n ) {
 fn square ( n -- n ) { dup * }
 5 square .
 
-// Higher-order words
+// map
 [ 1 2 3 4 5 ] [ dup * ] map .</textarea>
       <div class="playground-controls">
         <button id="tak-run">&#9654; Run</button>
@@ -73,7 +73,7 @@ fn square ( n -- n ) { dup * }
     </div>
 
     <h2 id="full-documentation"><a href="#full-documentation">Full Documentation</a></h2>
-    <p>Full syntax reference, standard library, DOM, async/fetch, JS interop, and programmatic API &rarr; <a href="./language.html">Language Reference</a></p>
+    <p><a href="./language.html">Language Reference</a></p>
 
     <h2 id="build"><a href="#build">Build</a></h2>
     <pre><code>npm install
