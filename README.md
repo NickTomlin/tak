@@ -1,14 +1,13 @@
 # tak
 
 **tak** is a small stack-based language that runs in the browser. Inspired by Factor's
-quotation model, PostScript's dictionary flavor, and a desire for maximum debuggability.
-The name means "thank you" in Danish — a tribute to the language hackers who came before.
+quotation model and PostScript's dictionary flavor. The name is Danish for "thank you".
 
 ---
 
 ## A Taste of tak
 
-Values are pushed onto a stack and words consume and produce them. No variables — only the stack.
+Values are pushed onto a stack and words consume and produce them. There are no variables.
 
 ```
 3 4 + dup *   // stack: [ 49 ]
@@ -28,7 +27,7 @@ fn factorial ( n -- n ) {
 
 ## Quick Start
 
-Load tak from a CDN — no build step, no install:
+Load tak from a CDN:
 
 ```html
 <!-- ESM via esm.sh -->
