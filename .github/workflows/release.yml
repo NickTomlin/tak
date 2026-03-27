@@ -32,6 +32,9 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # NPM_TOKEN must be an "Automation" token (npmjs.com → Access Tokens →
+          # Generate New Token → Automation). Automation tokens bypass OTP/2FA
+          # for CI publishing without disabling 2FA on your account.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
