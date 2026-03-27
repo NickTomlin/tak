@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tak — language reference</title>
+  <link rel="stylesheet" href="./tak-docs.css">
+</head>
+<body>
+  <aside id="sidebar">
+    <a class="logo" href="./index.html">tak</a>
+    <nav>
+      <ul>
+        <li><a href="#syntax">Syntax</a>
+          <ul>
+            <li><a href="#literals">literals</a></li>
+            <li><a href="#function-definitions">fn definitions</a></li>
+            <li><a href="#quotations-and-arrays">quotations &amp; arrays</a></li>
+            <li><a href="#dict-literals">dict literals</a></li>
+            <li><a href="#control-flow">control flow</a></li>
+            <li><a href="#javascript-escape-hatch">@js escape hatch</a></li>
+            <li><a href="#comments">comments</a></li>
+          </ul>
+        </li>
+        <li><a href="#standard-library">Standard Library</a>
+          <ul>
+            <li><a href="#stack">stack</a></li>
+            <li><a href="#arithmetic">arithmetic</a></li>
+            <li><a href="#comparison">comparison</a></li>
+            <li><a href="#logic">logic</a></li>
+            <li><a href="#string">string</a></li>
+            <li><a href="#array-quotation">array / quotation</a></li>
+            <li><a href="#dict">dict</a></li>
+            <li><a href="#control">control</a></li>
+            <li><a href="#io">i/o</a></li>
+            <li><a href="#type">type</a></li>
+            <li><a href="#async-fetch">async / fetch</a></li>
+            <li><a href="#js-interop">js interop</a></li>
+            <li><a href="#static-imports">static imports</a></li>
+            <li><a href="#debug-words">debug words</a></li>
+            <li><a href="#dom">dom</a></li>
+          </ul>
+        </li>
+        <li><a href="#debug-panel-api">Debug Panel API</a></li>
+        <li><a href="#programmatic-use">Programmatic Use</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main>
+    <h1 id="language-reference"><a href="#language-reference">Language Reference</a></h1>
+    <p>Complete language reference for tak.</p>
+
+    <h2 id="syntax"><a href="#syntax">Syntax</a></h2>
+
+    <h3 id="literals"><a href="#literals">Literals</a></h3>
+    <pre><code>42          // integer
+3.14        // float
+"hello"     // string (supports \n \t \r \" \\)
+true false  // booleans
+null</code></pre>
+
+    <h3 id="function-definitions"><a href="#function-definitions">Function definitions</a></h3>
+    <pre><code>fn square ( n -- n ) { dup * }
+fn greet  ( str -- ) { "Hello, " swap concat . }</code></pre>
+
+    <h3 id="quotations-and-arrays"><a href="#quotations-and-arrays">Quotations and arrays</a></h3>
+    <p><code>[ word... ]</code> is a callable quotation when it contains words. <code>[ literal... ]</code> is an array of values when it contains only literals. Nested literal brackets create nested arrays.</p>
+    <pre><code>[ 1 2 3 ]         // array literal
+[ dup * ]         // callable quotation
+[ "a" "b" "c" ]   // array of strings</code></pre>
+
+    <h3 id="dict-literals"><a href="#dict-literals">Dict literals</a></h3>
+    <pre><code>{ name: "Alice", age: 30 }</code></pre>
+
+    <h3 id="control-flow"><a href="#control-flow">Control flow</a></h3>
+    <pre><code>5 0 > [ "positive" . ] [ "non-positive" . ] if
+10 [ dup 0 > ] [ 1 - ] while
+5 [ "tick" . ] times
+true [ "yes" . ] when</code></pre>
+
+    <h3 id="javascript-escape-hatch"><a href="#javascript-escape-hatch">JavaScript escape hatch</a></h3>
+    <pre><code>@js(document.querySelector('#app'))
+@js(Math.random())</code></pre>
+
+    <h3 id="comments"><a href="#comments">Comments</a></h3>
+    <pre><code>// line comment</code></pre>
+
+    <h2 id="standard-library"><a href="#standard-library">Standard Library</a></h2>
+
+    <h3 id="stack"><a href="#stack">Stack</a></h3>
+    <table>
+      <thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>dup</code></td><td><code>( a -- a a )</code></td><td>Duplicate top</td></tr>
+        <tr><td><code>drop</code></td><td><code>( a -- )</code></td><td>Discard top</td></tr>
+        <tr><td><code>swap</code></td><td><code>( a b -- b a )</code></td><td>Swap top two</td></tr>
+        <tr><td><code>over</code></td><td><code>( a b -- a b a )</code></td><td>Copy second</td></tr>
+        <tr><td><code>rot</code></td><td><code>( a b c -- b c a )</code></td><td>Rotate top three</td></tr>
+        <tr><td><code>nip</code></td><td><code>( a b -- b )</code></td><td>Drop second</td></tr>
+        <tr><td><code>tuck</code></td><td><code>( a b -- b a b )</code></td><td>Copy top under second</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="arithmetic"><a href="#arithmetic">Arithmetic</a></h3>
+    <p><code>+</code>&nbsp; <code>-</code>&nbsp; <code>*</code>&nbsp; <code>/</code>&nbsp; <code>%</code>&nbsp; <code>**</code>&nbsp; <code>neg</code></p>
+
+    <h3 id="comparison"><a href="#comparison">Comparison</a></h3>
+    <p><code>=</code>&nbsp; <code>!=</code>&nbsp; <code>&lt;</code>&nbsp; <code>&gt;</code>&nbsp; <code>&lt;=</code>&nbsp; <code>&gt;=</code></p>
+
+    <h3 id="logic"><a href="#logic">Logic</a></h3>
+    <p><code>and</code>&nbsp; <code>or</code>&nbsp; <code>not</code></p>
+
+    <h3 id="string"><a href="#string">String</a></h3>
+    <table>
+      <thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>concat</code></td><td><code>( str str -- str )</code></td><td>Concatenate two strings</td></tr>
+        <tr><td><code>length</code></td><td><code>( str|arr -- n )</code></td><td>Length of string or array</td></tr>
+        <tr><td><code>substr</code></td><td><code>( str start end -- str )</code></td><td>Substring by index range</td></tr>
+        <tr><td><code>split</code></td><td><code>( str sep -- arr )</code></td><td>Split string by separator</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="array-quotation"><a href="#array-quotation">Array / Quotation</a></h3>
+    <table>
+      <thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>push</code></td><td><code>( arr val -- arr )</code></td><td>Append value to array</td></tr>
+        <tr><td><code>pop</code></td><td><code>( arr -- arr val )</code></td><td>Remove and push last element</td></tr>
+        <tr><td><code>nth</code></td><td><code>( arr n -- val )</code></td><td>Get element by index</td></tr>
+        <tr><td><code>map</code></td><td><code>( arr quot -- arr )</code></td><td>Apply quotation to each element</td></tr>
+        <tr><td><code>filter</code></td><td><code>( arr quot -- arr )</code></td><td>Keep elements where quotation is truthy</td></tr>
+        <tr><td><code>reduce</code></td><td><code>( arr init quot -- val )</code></td><td>Fold array with initial value</td></tr>
+        <tr><td><code>each</code></td><td><code>( arr quot -- )</code></td><td>Execute quotation for each element</td></tr>
+        <tr><td><code>call</code></td><td><code>( quot -- )</code></td><td>Execute a quotation</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="dict"><a href="#dict">Dict</a></h3>
+    <table>
+      <thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>get</code></td><td><code>( dict key -- val )</code></td><td>Get value by key</td></tr>
+        <tr><td><code>set</code></td><td><code>( dict key val -- dict )</code></td><td>Set value by key, returns new dict</td></tr>
+        <tr><td><code>has</code></td><td><code>( dict key -- bool )</code></td><td>Check if key exists</td></tr>
+        <tr><td><code>keys</code></td><td><code>( dict -- arr )</code></td><td>Get all keys as array</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="control"><a href="#control">Control</a></h3>
+    <table>
+      <thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>if</code></td><td><code>( bool true-q false-q -- )</code></td><td>Conditional branch</td></tr>
+        <tr><td><code>when</code></td><td><code>( bool quot -- )</code></td><td>Execute if truthy</td></tr>
+        <tr><td><code>unless</code></td><td><code>( bool quot -- )</code></td><td>Execute if falsy</td></tr>
+        <tr><td><code>while</code></td><td><code>( cond-q body-q -- )</code></td><td>Loop while condition is truthy</td></tr>
+        <tr><td><code>times</code></td><td><code>( n quot -- )</code></td><td>Execute quotation n times</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="io"><a href="#io">I/O</a></h3>
+    <ul>
+      <li><code>.</code> / <code>log</code> — print top of stack to console</li>
+      <li><code>str</code> — <code>( val -- str )</code> convert any value to string</li>
+    </ul>
+
+    <h3 id="type"><a href="#type">Type</a></h3>
+    <ul>
+      <li><code>type</code> — pushes type name: <code>"number"</code>, <code>"string"</code>, <code>"bool"</code>, <code>"array"</code>, <code>"dict"</code>, <code>"quot"</code>, <code>"null"</code>, <code>"element"</code></li>
+      <li>Predicates: <code>number?</code>&nbsp; <code>string?</code>&nbsp; <code>bool?</code>&nbsp; <code>array?</code>&nbsp; <code>dict?</code>&nbsp; <code>null?</code>&nbsp; <code>quot?</code></li>
+    </ul>
+
+    <h3 id="async-fetch"><a href="#async-fetch">Async / Fetch</a></h3>
+    <table>
+      <thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>fetch</code></td><td><code>( url -- Promise )</code></td><td>HTTP GET</td></tr>
+        <tr><td><code>fetch-post</code></td><td><code>( url body -- Promise )</code></td><td>HTTP POST</td></tr>
+        <tr><td><code>await</code></td><td><code>( Promise -- val )</code></td><td>Resolve promise</td></tr>
+        <tr><td><code>response/json</code></td><td><code>( Response -- val )</code></td><td>Parse as JSON</td></tr>
+        <tr><td><code>response/text</code></td><td><code>( Response -- str )</code></td><td>Read as text</td></tr>
+        <tr><td><code>json/parse</code></td><td><code>( str -- val )</code></td><td>Parse JSON string</td></tr>
+        <tr><td><code>json/str</code></td><td><code>( val -- str )</code></td><td>Serialize to JSON</td></tr>
+      </tbody>
+    </table>
+    <pre><code>"https://example.com/api" fetch await response/json
+"https://example.com/api" { x: 1 } fetch-post await response/json
+'{"x":1}' json/parse
+{ x: 1 } json/str</code></pre>
+
+    <h3 id="js-interop"><a href="#js-interop">JS Interop</a></h3>
+    <table>
+      <thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>import</code></td><td><code>( url -- Promise )</code></td><td>Dynamic JS import</td></tr>
+        <tr><td><code>js/get</code></td><td><code>( js key -- val )</code></td><td>Read property</td></tr>
+        <tr><td><code>js/call</code></td><td><code>( js arg1..argN n -- result )</code></td><td>Call with N args</td></tr>
+        <tr><td><code>js/unwrap</code></td><td><code>( js -- val )</code></td><td>Convert to tak value</td></tr>
+      </tbody>
+    </table>
+    <pre><code>"https://cdn.example.com/lib.js" import await
+"Chart" js/get
+0 js/call</code></pre>
+
+    <h3 id="static-imports"><a href="#static-imports">Static Imports (use)</a></h3>
+    <p><code>use</code> is a hoisted import — all URLs are fetched before the program runs, results available synchronously.</p>
+    <pre><code>"./lib.js" use
+"./lib.js" [ Chart ] use
+"./lib.js" [ renderFn as render ] use</code></pre>
+    <p>The URL must be a string literal. Without bindings, the whole module is pushed. With bindings, each export becomes a word.</p>
+
+    <h3 id="debug-words"><a href="#debug-words">Debug words</a></h3>
+    <ul>
+      <li><code>trace</code> — log top value without consuming it</li>
+      <li><code>debug</code> — fire debug event and log full stack</li>
+    </ul>
+
+    <h3 id="dom"><a href="#dom">DOM</a></h3>
+    <table>
+      <thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>dom/query</code></td><td><code>( selector -- el|null )</code></td><td>querySelector</td></tr>
+        <tr><td><code>dom/query-all</code></td><td><code>( selector -- arr )</code></td><td>querySelectorAll as array</td></tr>
+        <tr><td><code>dom/create</code></td><td><code>( tag -- el )</code></td><td>createElement</td></tr>
+        <tr><td><code>dom/append</code></td><td><code>( parent child -- parent )</code></td><td>Append child, return parent</td></tr>
+        <tr><td><code>dom/text</code></td><td><code>( el str -- el )</code></td><td>Set textContent, return el</td></tr>
+        <tr><td><code>dom/html</code></td><td><code>( el str -- el )</code></td><td>Set innerHTML, return el</td></tr>
+        <tr><td><code>dom/on</code></td><td><code>( el event quot -- el )</code></td><td>Add event listener, return el</td></tr>
+        <tr><td><code>dom/attr-get</code></td><td><code>( el attr -- val )</code></td><td>Get attribute value</td></tr>
+        <tr><td><code>dom/attr-set</code></td><td><code>( el attr val -- el )</code></td><td>Set attribute, return el</td></tr>
+        <tr><td><code>dom/class-add</code></td><td><code>( el class -- el )</code></td><td>Add CSS class, return el</td></tr>
+        <tr><td><code>dom/class-rm</code></td><td><code>( el class -- el )</code></td><td>Remove CSS class, return el</td></tr>
+        <tr><td><code>dom/remove</code></td><td><code>( el -- )</code></td><td>Remove element from DOM</td></tr>
+      </tbody>
+    </table>
+    <p>Note: <code>dom/on</code> pushes the element onto the stack before calling the quotation.</p>
+
+    <h2 id="debug-panel-api"><a href="#debug-panel-api">Debug Panel API</a></h2>
+    <pre><code>const interp = new Tak.TakInterpreter({ debug: true });
+
+interp.on('beforeWord', ({ word, stack }) => { });
+interp.on('afterWord',  ({ word, stack }) => { });
+interp.on('push',       ({ value, stack }) => { });
+interp.on('pop',        ({ value, stack }) => { });
+interp.on('error',      ({ error, word, stack }) => { });
+interp.on('scriptEnd',  ({ stack }) => { });
+
+interp.stack   // read-only snapshot
+interp.dict    // Map of all defined words</code></pre>
+    <p><code>Ctrl+D</code> toggles the debug overlay when <code>data-debug="true"</code> is set.</p>
+
+    <h2 id="programmatic-use"><a href="#programmatic-use">Programmatic Use</a></h2>
+    <pre><code>import { TakInterpreter, registerStdlib, registerDomStdlib } from './dist/tak.js';
+import { tokenize } from './dist/tak.js';
+import { parse } from './dist/tak.js';
+
+const interp = new TakInterpreter({ debug: true });
+registerStdlib(interp);
+registerDomStdlib(interp);
+
+const tokens = tokenize('5 3 + .');
+const program = parse(tokens);
+await interp.run(program);</code></pre>
+  </main>
+</body>
+</html>

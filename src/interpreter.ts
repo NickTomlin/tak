@@ -5,6 +5,24 @@ import { AstNode, Program, FnDef, Quotation, DictLiteral, Literal, Word, JsExpr,
 // Dynamic import that bypasses bundler static analysis
 const _dynImport = new Function('u', 'return import(u)') as (u: string) => Promise<Record<string, unknown>>;
 
+// Returns true if every node in a bracket body is pure data
+// (a literal or a nested all-data quotation), making it an array literal.
+function isDataBody(nodes: AstNode[]): boolean {
+  return nodes.every(n =>
+    n.type === 'Literal' ||
+    (n.type === 'Quotation' && isDataBody((n as Quotation).body))
+  );
+}
+
+// Eagerly evaluate an all-data body into TakValues (no interpreter needed).
+function evalDataBody(nodes: AstNode[]): TakValue[] {
+  return nodes.map(n => {
+    if (n.type === 'Literal') return (n as Literal).value as TakValue;
+    // Must be an all-data Quotation (guaranteed by isDataBody)
+    return { kind: 'array', items: evalDataBody((n as Quotation).body) } as TakArray;
+  });
+}
+
 function collectUseUrls(nodes: AstNode[]): string[] {
   const urls: string[] = [];
   for (const node of nodes) {
@@ -200,9 +218,12 @@ export class TakInterpreter extends TakEmitter {
         break;
 
       case 'Quotation': {
-        // Push as a TakQuot (not evaluated immediately)
-        const quot: TakQuot = { kind: 'quot', body: node.body, interp: this };
-        this.push(quot);
+        // [ literal... ] → TakArray (data); [ word... ] → TakQuot (callable)
+        if (isDataBody(node.body)) {
+          this.push({ kind: 'array', items: evalDataBody(node.body) });
+        } else {
+          this.push({ kind: 'quot', body: node.body, interp: this });
+        }
         break;
       }
 

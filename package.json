@@ -1,18 +1,61 @@
 {
-  "name": "tak",
-  "version": "0.1.0",
+  "name": "@nicktomlin/tak",
+  "version": "1.0.0",
   "description": "tak — a stack-based language for the browser and command line",
   "main": "dist/tak.js",
+  "module": "dist/tak.esm.min.js",
+  "exports": {
+    ".": {
+      "import": "./dist/tak.esm.min.js",
+      "require": "./dist/tak.min.js"
+    }
+  },
   "bin": {
     "tak": "./dist/cli.js"
   },
   "scripts": {
-    "build": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak",
+    "build": "npm run build:iife && npm run build:esm",
+    "build:iife": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak && esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.min.js --platform=browser --format=iife --global-name=Tak --minify --sourcemap",
+    "build:esm": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.esm.js --platform=browser --format=esm && esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.esm.min.js --platform=browser --format=esm --minify --sourcemap",
     "build:dev": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap",
     "build:cli": "esbuild src/cli.ts --bundle --outfile=dist/cli.js --platform=node --format=cjs --banner:js=\"globalThis.Element = globalThis.Element || class Element {};\" && chmod +x dist/cli.js",
     "watch": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap --watch",
     "typecheck": "tsc --noEmit",
-    "serve": "npx serve ."
+    "docs": "node scripts/build-docs.js",
+    "build:docs": "npm run build && npm run docs",
+    "serve": "node scripts/serve.js",
+    "release": "release-it"
+  },
+  "release-it": {
+    "hooks": {
+      "before:init": ["npm run typecheck", "npm run build"],
+      "after:bump": ["npm run docs"]
+    },
+    "git": {
+      "commitMessage": "chore: release v${version}",
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true,
+      "releaseName": "v${version}",
+      "assets": [
+        "dist/tak.js",
+        "dist/tak.min.js",
+        "dist/tak.esm.js",
+        "dist/tak.esm.min.js"
+      ]
+    },
+    "npm": {
+      "publish": true,
+      "skipChecks": true,
+      "publishArgs": ["--access", "public"]
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md"
+      }
+    }
   },
   "keywords": [
     "stack-based",
@@ -22,8 +65,10 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@release-it/conventional-changelog": "^10.0.6",
     "@types/node": "^25.5.0",
     "esbuild": "^0.24.0",
+    "release-it": "^19.2.4",
     "typescript": "^5.7.0"
   }
 }
