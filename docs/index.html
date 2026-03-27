@@ -4,291 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>tak — documentation</title>
-  <style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-:root {
-  --bg:       #faf8f3;
-  --bg-side:  #f3efe6;
-  --bg-code:  #edeae2;
-  --fg:       #2a2218;
-  --fg-muted: #7a6e60;
-  --accent:   #8b3a12;
-  --border:   #ddd8cc;
-  --side-w:   230px;
-  --max-w:    720px;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--fg);
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: 17px;
-  line-height: 1.75;
-  display: flex;
-  min-height: 100vh;
-}
-
-/* ── Sidebar ── */
-#sidebar {
-  width: var(--side-w);
-  min-width: var(--side-w);
-  background: var(--bg-side);
-  border-right: 1px solid var(--border);
-  padding: 2rem 0;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-  flex-shrink: 0;
-}
-
-#sidebar .logo {
-  display: block;
-  padding: 0 1.4rem 1.2rem;
-  font-family: Georgia, serif;
-  font-size: 1.5rem;
-  font-style: italic;
-  color: var(--accent);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 1.2rem;
-  text-decoration: none;
-  letter-spacing: 0.02em;
-}
-
-nav ul { list-style: none; }
-
-nav > ul > li > a {
-  display: block;
-  padding: 0.28rem 1.4rem;
-  color: var(--fg);
-  text-decoration: none;
-  font-size: 0.88rem;
-  font-family: Georgia, serif;
-}
-
-nav > ul > li > a:hover { color: var(--accent); }
-
-nav > ul > li > ul { margin-bottom: 0.5rem; }
-
-nav > ul > li > ul > li > a {
-  display: block;
-  padding: 0.15rem 1.4rem 0.15rem 2.2rem;
-  color: var(--fg-muted);
-  text-decoration: none;
-  font-size: 0.82rem;
-  font-family: "SFMono-Regular", Consolas, monospace;
-}
-
-nav > ul > li > ul > li > a:hover { color: var(--accent); }
-
-/* ── Main ── */
-main {
-  flex: 1;
-  padding: 3rem 3rem 5rem;
-  max-width: calc(var(--max-w) + 6rem);
-  min-width: 0;
-}
-
-/* ── Typography ── */
-h1 {
-  font-size: 2.6rem;
-  font-weight: normal;
-  font-style: italic;
-  color: var(--fg);
-  margin-bottom: 0.3rem;
-  letter-spacing: -0.01em;
-}
-h1 a { color: inherit; text-decoration: none; }
-
-h2 {
-  font-size: 1.4rem;
-  font-weight: normal;
-  font-style: italic;
-  color: var(--fg);
-  margin: 3rem 0 0.9rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
-  letter-spacing: 0.01em;
-}
-h2 a { color: inherit; text-decoration: none; }
-
-h3 {
-  font-size: 0.92rem;
-  font-weight: bold;
-  font-style: normal;
-  font-family: "SFMono-Regular", Consolas, monospace;
-  color: var(--accent);
-  margin: 2rem 0 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-h3 a { color: inherit; text-decoration: none; }
-
-h4 {
-  font-size: 0.95rem;
-  font-style: italic;
-  color: var(--fg-muted);
-  margin: 1.2rem 0 0.4rem;
-}
-
-p { margin-bottom: 1rem; }
-
-a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
-a:hover { text-decoration: none; }
-
-strong { font-weight: bold; }
-
-/* ── Code ── */
-code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 0.82em;
-  background: var(--bg-code);
-  color: var(--accent);
-  padding: 0.1em 0.35em;
-  border-radius: 2px;
-}
-
-pre {
-  background: var(--bg-code);
-  border-left: 2px solid var(--accent);
-  padding: 1.1rem 1.4rem;
-  overflow-x: auto;
-  margin: 0.9rem 0 1.4rem;
-}
-
-pre code {
-  background: none;
-  color: var(--fg);
-  padding: 0;
-  font-size: 0.86rem;
-  border-radius: 0;
-}
-
-/* ── Tables ── */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0.6rem 0 1.4rem;
-  font-size: 0.88rem;
-  font-family: "SFMono-Regular", Consolas, monospace;
-}
-
-th {
-  text-align: left;
-  padding: 0.5rem 0.9rem;
-  color: var(--fg-muted);
-  font-family: Georgia, serif;
-  font-style: italic;
-  font-weight: normal;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--fg-muted);
-}
-
-td {
-  padding: 0.4rem 0.9rem;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-
-tr:last-child td { border-bottom: none; }
-td:first-child code { color: var(--accent); font-weight: bold; }
-
-/* ── Lists ── */
-ul {
-  padding-left: 1.6rem;
-  margin-bottom: 1rem;
-}
-
-ul li { margin-bottom: 0.3rem; }
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-/* ── Playground ── */
-.playground-wrap { margin-top: 1rem; }
-
-#tak-input {
-  width: 100%;
-  min-height: 170px;
-  font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 0.86rem;
-  background: var(--bg-code);
-  color: var(--fg);
-  border: 1px solid var(--border);
-  border-left: 2px solid var(--accent);
-  padding: 1rem 1.2rem;
-  resize: vertical;
-  outline: none;
-  line-height: 1.6;
-  display: block;
-}
-
-#tak-input:focus { border-color: var(--accent); }
-
-.playground-controls {
-  display: flex;
-  gap: 0.6rem;
-  margin: 0.6rem 0;
-}
-
-.playground-controls button {
-  font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 0.82rem;
-  padding: 0.35rem 0.9rem;
-  background: var(--accent);
-  color: var(--bg);
-  border: none;
-  cursor: pointer;
-  border-radius: 2px;
-}
-
-.playground-controls button:hover { opacity: 0.85; }
-
-#tak-clear {
-  background: var(--bg-code) !important;
-  color: var(--fg) !important;
-  border: 1px solid var(--border) !important;
-}
-
-.playground-output {
-  font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 0.84rem;
-  background: var(--bg-code);
-  border-left: 2px solid var(--border);
-  padding: 1rem 1.2rem;
-  white-space: pre-wrap;
-  line-height: 1.6;
-  display: none;
-}
-
-.playground-output.has-content { display: block; }
-.out-line { color: var(--fg); }
-.out-stack { color: var(--fg-muted); margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.4rem; }
-.out-error { color: #c0392b; }
-
-/* ── Responsive ── */
-@media (max-width: 640px) {
-  body { flex-direction: column; }
-  #sidebar { position: static; width: 100%; height: auto; min-width: 0; }
-  main { padding: 1.5rem 1rem 3rem; }
-}</style>
+  <link rel="stylesheet" href="./tak-docs.css">
 </head>
 <body>
   <aside id="sidebar">
     <a class="logo" href="#">tak</a>
-    <nav><ul><li><a href="#a-taste-of-tak">A Taste of tak</a><ul></ul></li><li><a href="#quick-start">Quick Start</a><ul></ul></li><li><a href="#playground">Playground</a><ul></ul></li><li><a href="#full-documentation">Full Documentation</a><ul></ul></li><li><a href="#build">Build</a><ul></ul></li><li><a href="#license">License</a><ul></ul></li></ul></nav>
+    <nav>
+      <ul>
+        <li><a href="#a-taste-of-tak">A Taste of tak</a></li>
+        <li><a href="#quick-start">Quick Start</a></li>
+        <li><a href="#playground">Playground</a></li>
+        <li><a href="#full-documentation">Full Documentation</a></li>
+        <li><a href="#build">Build</a></li>
+        <li><a href="#license">License</a></li>
+      </ul>
+    </nav>
   </aside>
   <main>
     <h1 id="tak"><a href="#tak">tak</a></h1>
-<p><strong>tak</strong> is a small stack-based language that runs in the browser. Inspired by Factor's quotation model, PostScript's dictionary flavor, and a desire for maximum debuggability. The name means "thank you" in Danish — a tribute to the language hackers who came before.</p>
+    <p><strong>tak</strong> is a small stack-based language that runs in the browser. Inspired by Factor's quotation model, PostScript's dictionary flavor, and a desire for maximum debuggability. The name means "thank you" in Danish — a tribute to the language hackers who came before.</p>
 
-<h2 id="a-taste-of-tak"><a href="#a-taste-of-tak">A Taste of tak</a></h2>
-<p>Values are pushed onto a stack and words consume and produce them. No variables — only the stack.</p>
-<pre><code class="lang-tak">3 4 + dup *   // stack: [ 49 ]
+    <h2 id="a-taste-of-tak"><a href="#a-taste-of-tak">A Taste of tak</a></h2>
+    <p>Values are pushed onto a stack and words consume and produce them. No variables — only the stack.</p>
+    <pre><code>3 4 + dup *   // stack: [ 49 ]
 
 fn factorial ( n -- n ) {
   dup 1 &gt; [ dup 1 - factorial * ] [ drop 1 ] if
@@ -300,25 +38,25 @@ fn factorial ( n -- n ) {
 "https://api.example.com/data" fetch await response/json
 "results" get 0 nth "name" get .</code></pre>
 
-<h2 id="quick-start"><a href="#quick-start">Quick Start</a></h2>
-<p>Load tak from a CDN — no build step, no install:</p>
-<pre><code class="lang-html">&lt;!-- ESM via esm.sh --&gt;
+    <h2 id="quick-start"><a href="#quick-start">Quick Start</a></h2>
+    <p>Load tak from a CDN — no build step, no install:</p>
+    <pre><code>&lt;!-- ESM via esm.sh --&gt;
 &lt;script type="module" src="https://esm.sh/@nicktomlin/tak"&gt;&lt;/script&gt;
 
 &lt;!-- or classic script via unpkg --&gt;
 &lt;script src="https://unpkg.com/@nicktomlin/tak/dist/tak.js"&gt;&lt;/script&gt;</code></pre>
-<p>Then write tak inline:</p>
-<pre><code class="lang-html">&lt;script type="text/tak"&gt;
+    <p>Then write tak inline:</p>
+    <pre><code>&lt;script type="text/tak"&gt;
   fn greet ( str -- ) { "Hello, " swap concat . }
   "World" greet
 &lt;/script&gt;</code></pre>
-<p>Enable the live debug panel (floating stack overlay, <code>Ctrl+D</code> to dismiss):</p>
-<pre><code class="lang-html">&lt;script type="module" src="https://esm.sh/@nicktomlin/tak" data-debug="true"&gt;&lt;/script&gt;</code></pre>
+    <p>Enable the live debug panel (floating stack overlay, <code>Ctrl+D</code> to dismiss):</p>
+    <pre><code>&lt;script type="module" src="https://esm.sh/@nicktomlin/tak" data-debug="true"&gt;&lt;/script&gt;</code></pre>
 
-<h2 id="playground"><a href="#playground">Playground</a></h2>
-<p>Try tak right here. Press <strong>Ctrl+Enter</strong> (or click Run) to execute.</p>
-<div class="playground-wrap">
-  <textarea id="tak-input" spellcheck="false">// Basic arithmetic
+    <h2 id="playground"><a href="#playground">Playground</a></h2>
+    <p>Try tak right here. Press <strong>Ctrl+Enter</strong> (or click Run) to execute.</p>
+    <div class="playground-wrap">
+      <textarea id="tak-input" spellcheck="false">// Basic arithmetic
 3 4 + .
 
 // Define a function
@@ -327,27 +65,25 @@ fn square ( n -- n ) { dup * }
 
 // Higher-order words
 [ 1 2 3 4 5 ] [ dup * ] map .</textarea>
-  <div class="playground-controls">
-    <button id="tak-run">&#9654; Run</button>
-    <button id="tak-clear">Clear output</button>
-  </div>
-  <div id="tak-output" class="playground-output" aria-live="polite"></div>
-</div>
+      <div class="playground-controls">
+        <button id="tak-run">&#9654; Run</button>
+        <button id="tak-clear">Clear output</button>
+      </div>
+      <div id="tak-output" class="playground-output" aria-live="polite"></div>
+    </div>
 
-<h2 id="full-documentation"><a href="#full-documentation">Full Documentation</a></h2>
-<p>Syntax reference, standard library, DOM words, async/fetch, JS interop, and programmatic API:</p>
-<p><a href="https://github.com/NickTomlin/tak/blob/main/docs/index.html"><strong>docs/index.html</strong></a></p>
-<p>*(A GitHub Pages site is coming — this will be updated to a live URL.)*</p>
+    <h2 id="full-documentation"><a href="#full-documentation">Full Documentation</a></h2>
+    <p>Full syntax reference, standard library, DOM, async/fetch, JS interop, and programmatic API &rarr; <a href="./language.html">Language Reference</a></p>
 
-<h2 id="build"><a href="#build">Build</a></h2>
-<pre><code class="lang-sh">npm install
+    <h2 id="build"><a href="#build">Build</a></h2>
+    <pre><code>npm install
 npm run build        # production bundle → dist/tak.js
 npm run build:dev    # with source maps
 npm run watch        # watch mode
 npm run typecheck    # tsc type check only</code></pre>
 
-<h2 id="license"><a href="#license">License</a></h2>
-<p>MIT</p>
+    <h2 id="license"><a href="#license">License</a></h2>
+    <p>MIT</p>
   </main>
 </body>
 <script src="./tak.js"></script>

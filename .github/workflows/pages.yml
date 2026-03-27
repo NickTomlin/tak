@@ -39,6 +39,8 @@ jobs:
           mkdir -p site/dist site/examples
           cp docs/index.html site/index.html
           cp docs/tak.js site/tak.js
+          cp docs/tak-docs.css site/tak-docs.css
+          cp docs/language.html site/language.html
           cp dist/tak.js site/dist/tak.js
           cp dist/tak.min.js site/dist/tak.min.js
           cp dist/tak.min.js.map site/dist/tak.min.js.map
