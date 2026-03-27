@@ -280,37 +280,25 @@ ul li { margin-bottom: 0.3rem; }
 <body>
   <aside id="sidebar">
     <a class="logo" href="#">tak</a>
-    <nav><ul><li><a href="#a-taste-of-tak">A Taste of tak</a><ul></ul></li><li><a href="#quick-start">Quick Start</a><ul></ul></li><li><a href="#playground">Playground</a><ul></ul></li><li><a href="#syntax">Syntax</a><ul><li><a href="#literals">Literals</a></li><li><a href="#function-definitions-stack-effects-required">Function definitions (stack effects required)</a></li><li><a href="#quotations-arrays">Quotations / arrays</a></li><li><a href="#dict-literals">Dict literals</a></li><li><a href="#control-flow-combinators">Control flow (combinators)</a></li><li><a href="#javascript-escape-hatch">JavaScript escape hatch</a></li><li><a href="#comments">Comments</a></li></ul></li><li><a href="#standard-library">Standard Library</a><ul><li><a href="#stack">Stack</a></li><li><a href="#arithmetic">Arithmetic</a></li><li><a href="#comparison-boolean">Comparison → boolean</a></li><li><a href="#logic">Logic</a></li><li><a href="#string">String</a></li><li><a href="#array-quotation">Array / Quotation</a></li><li><a href="#dict">Dict</a></li><li><a href="#control">Control</a></li><li><a href="#io">I/O</a></li><li><a href="#type">Type</a></li><li><a href="#async-fetch">Async / Fetch</a></li><li><a href="#js-interop">JS Interop</a></li><li><a href="#static-imports-use">Static Imports (`use`)</a></li><li><a href="#debug">Debug</a></li><li><a href="#dom">DOM</a></li></ul></li><li><a href="#debug-panel-api">Debug Panel API</a><ul></ul></li><li><a href="#programmatic-use">Programmatic Use</a><ul></ul></li><li><a href="#project-structure">Project Structure</a><ul></ul></li><li><a href="#build">Build</a><ul></ul></li><li><a href="#license">License</a><ul></ul></li></ul></nav>
+    <nav><ul><li><a href="#a-taste-of-tak">A Taste of tak</a><ul></ul></li><li><a href="#quick-start">Quick Start</a><ul></ul></li><li><a href="#playground">Playground</a><ul></ul></li><li><a href="#full-documentation">Full Documentation</a><ul></ul></li><li><a href="#build">Build</a><ul></ul></li><li><a href="#license">License</a><ul></ul></li></ul></nav>
   </aside>
   <main>
+    <h1 id="tak"><a href="#tak">tak</a></h1>
 <p><strong>tak</strong> is a small stack-based language that runs in the browser. Inspired by Factor's quotation model, PostScript's dictionary flavor, and a desire for maximum debuggability. The name means "thank you" in Danish — a tribute to the language hackers who came before.</p>
 
 <h2 id="a-taste-of-tak"><a href="#a-taste-of-tak">A Taste of tak</a></h2>
-<p>In tak, values are pushed onto a stack and words consume and produce them. A program is a sequence of values and words — there are no variables, only the stack.</p>
-<pre><code class="lang-tak">// Push two numbers and add them
-3 4 +           // stack: [ 7 ]
-dup *           // stack: [ 49 ]  (square it)
+<p>Values are pushed onto a stack and words consume and produce them. No variables — only the stack.</p>
+<pre><code class="lang-tak">3 4 + dup *   // stack: [ 49 ]
 
-// Functions are defined with a stack effect annotation
 fn factorial ( n -- n ) {
   dup 1 &gt; [ dup 1 - factorial * ] [ drop 1 ] if
 }
-
 5 factorial .   // prints 120
 
-// Quotations are first-class — deferred sequences of words
 [ 1 2 3 4 5 ] [ dup * ] map .   // prints [ 1 4 9 16 25 ]
 
-// Fetch data, parse it, work with the result
 "https://api.example.com/data" fetch await response/json
 "results" get 0 nth "name" get .</code></pre>
-<p>Embed it in any page — no install required:</p>
-<pre><code class="lang-html">&lt;!-- via CDN --&gt;
-&lt;script type="module" src="https://esm.sh/@nicktomlin/tak"&gt;&lt;/script&gt;
-&lt;script type="text/tak"&gt;
-  fn greet ( str -- ) { "Hello, " swap concat . }
-  "World" greet
-&lt;/script&gt;</code></pre>
 
 <h2 id="quick-start"><a href="#quick-start">Quick Start</a></h2>
 <p>Load tak from a CDN — no build step, no install:</p>
@@ -324,7 +312,7 @@ fn factorial ( n -- n ) {
   fn greet ( str -- ) { "Hello, " swap concat . }
   "World" greet
 &lt;/script&gt;</code></pre>
-<p>Enable the live debug panel (floating stack overlay):</p>
+<p>Enable the live debug panel (floating stack overlay, <code>Ctrl+D</code> to dismiss):</p>
 <pre><code class="lang-html">&lt;script type="module" src="https://esm.sh/@nicktomlin/tak" data-debug="true"&gt;&lt;/script&gt;</code></pre>
 
 <h2 id="playground"><a href="#playground">Playground</a></h2>
@@ -346,120 +334,10 @@ fn square ( n -- n ) { dup * }
   <div id="tak-output" class="playground-output" aria-live="polite"></div>
 </div>
 
-<h2 id="syntax"><a href="#syntax">Syntax</a></h2>
-<h3 id="literals"><a href="#literals">Literals</a></h3>
-<pre><code class="lang-tak">42          // integer
-3.14        // float
-"hello"     // string (supports \n \t \r \" \\)
-true false  // booleans
-null</code></pre>
-<h3 id="function-definitions-stack-effects-required"><a href="#function-definitions-stack-effects-required">Function definitions (stack effects required)</a></h3>
-<pre><code class="lang-tak">fn square ( n -- n ) { dup * }
-fn greet  ( str -- ) { "Hello, " swap concat . }</code></pre>
-<h3 id="quotations-arrays"><a href="#quotations-arrays">Quotations / arrays</a></h3>
-<pre><code class="lang-tak">[ 1 2 3 ]         // array of numbers (pushed as a value)
-[ 1 + ]           // callable quotation
-[ "hello" . ]     // quotation pushed as a value, called with 'call'</code></pre>
-<h3 id="dict-literals"><a href="#dict-literals">Dict literals</a></h3>
-<pre><code class="lang-tak">{ name: "Alice", age: 30 }</code></pre>
-<h3 id="control-flow-combinators"><a href="#control-flow-combinators">Control flow (combinators)</a></h3>
-<pre><code class="lang-tak">5 0 &gt; [ "positive" . ] [ "non-positive" . ] if
-10 [ dup 0 &gt; ] [ 1 - ] while
-5 [ "tick" . ] times
-true [ "yes" . ] when</code></pre>
-<h3 id="javascript-escape-hatch"><a href="#javascript-escape-hatch">JavaScript escape hatch</a></h3>
-<pre><code class="lang-tak">@js(document.querySelector('#app'))
-@js(Math.random())</code></pre>
-<h3 id="comments"><a href="#comments">Comments</a></h3>
-<pre><code class="lang-tak">// line comment</code></pre>
-
-<h2 id="standard-library"><a href="#standard-library">Standard Library</a></h2>
-<h3 id="stack"><a href="#stack">Stack</a></h3>
-<table><thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead><tbody><tr><td><code>dup</code></td><td><code>( a -- a a )</code></td><td>Duplicate top</td></tr><tr><td><code>drop</code></td><td><code>( a -- )</code></td><td>Discard top</td></tr><tr><td><code>swap</code></td><td><code>( a b -- b a )</code></td><td>Swap top two</td></tr><tr><td><code>over</code></td><td><code>( a b -- a b a )</code></td><td>Copy second</td></tr><tr><td><code>rot</code></td><td><code>( a b c -- b c a )</code></td><td>Rotate top three</td></tr><tr><td><code>nip</code></td><td><code>( a b -- b )</code></td><td>Drop second</td></tr><tr><td><code>tuck</code></td><td><code>( a b -- b a b )</code></td><td>Copy top under second</td></tr></tbody></table>
-<h3 id="arithmetic"><a href="#arithmetic">Arithmetic</a></h3>
-<p><code>+  -  *  /  %  **  neg</code></p>
-<h3 id="comparison-boolean"><a href="#comparison-boolean">Comparison → boolean</a></h3>
-<p><code>=  !=  &lt;  &gt;  &lt;=  &gt;=</code></p>
-<h3 id="logic"><a href="#logic">Logic</a></h3>
-<p><code>and  or  not</code></p>
-<h3 id="string"><a href="#string">String</a></h3>
-<table><thead><tr><th>Word</th><th>Effect</th></tr></thead><tbody><tr><td><code>concat</code></td><td><code>( str str -- str )</code></td></tr><tr><td><code>length</code></td><td>`( str\</td><td>arr -- n )`</td></tr><tr><td><code>substr</code></td><td><code>( str start end -- str )</code></td></tr><tr><td><code>split</code></td><td><code>( str sep -- arr )</code></td></tr></tbody></table>
-<h3 id="array-quotation"><a href="#array-quotation">Array / Quotation</a></h3>
-<table><thead><tr><th>Word</th><th>Effect</th></tr></thead><tbody><tr><td><code>push</code></td><td><code>( arr val -- arr )</code></td></tr><tr><td><code>pop</code></td><td><code>( arr -- arr val )</code></td></tr><tr><td><code>nth</code></td><td><code>( arr n -- val )</code></td></tr><tr><td><code>map</code></td><td><code>( arr quot -- arr )</code></td></tr><tr><td><code>filter</code></td><td><code>( arr quot -- arr )</code></td></tr><tr><td><code>reduce</code></td><td><code>( arr init quot -- val )</code></td></tr><tr><td><code>each</code></td><td><code>( arr quot -- )</code></td></tr><tr><td><code>call</code></td><td><code>( quot -- )</code></td></tr></tbody></table>
-<h3 id="dict"><a href="#dict">Dict</a></h3>
-<table><thead><tr><th>Word</th><th>Effect</th></tr></thead><tbody><tr><td><code>get</code></td><td><code>( dict key -- val )</code></td></tr><tr><td><code>set</code></td><td><code>( dict key val -- dict )</code></td></tr><tr><td><code>has</code></td><td><code>( dict key -- bool )</code></td></tr><tr><td><code>keys</code></td><td><code>( dict -- arr )</code></td></tr></tbody></table>
-<h3 id="control"><a href="#control">Control</a></h3>
-<table><thead><tr><th>Word</th><th>Effect</th></tr></thead><tbody><tr><td><code>if</code></td><td><code>( bool true-q false-q -- )</code></td></tr><tr><td><code>when</code></td><td><code>( bool quot -- )</code></td></tr><tr><td><code>unless</code></td><td><code>( bool quot -- )</code></td></tr><tr><td><code>while</code></td><td><code>( cond-q body-q -- )</code></td></tr><tr><td><code>times</code></td><td><code>( n quot -- )</code></td></tr></tbody></table>
-<h3 id="io"><a href="#io">I/O</a></h3>
-<ul><li><code>.</code> / <code>log</code> — print top of stack to console</li><li><code>str</code> — <code>( val -- str )</code> — convert any value to its string representation</li></ul>
-<h3 id="type"><a href="#type">Type</a></h3>
-<ul><li><code>type</code> — push type name as string: <code>"number"</code>, <code>"string"</code>, <code>"bool"</code>, <code>"array"</code>, <code>"dict"</code>, <code>"quot"</code>, <code>"null"</code>, <code>"element"</code></li><li><code>number?  string?  bool?  array?  dict?  null?  quot?</code></li></ul>
-<h3 id="async-fetch"><a href="#async-fetch">Async / Fetch</a></h3>
-<table><thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead><tbody><tr><td><code>fetch</code></td><td><code>( url -- Promise )</code></td><td>HTTP GET</td></tr><tr><td><code>fetch-post</code></td><td><code>( url body -- Promise )</code></td><td>HTTP POST; body can be string or dict</td></tr><tr><td><code>await</code></td><td><code>( Promise -- val )</code></td><td>Resolve a promise</td></tr><tr><td><code>response/json</code></td><td><code>( Response -- val )</code></td><td>Read response body as JSON → tak value</td></tr><tr><td><code>response/text</code></td><td><code>( Response -- str )</code></td><td>Read response body as plain text</td></tr><tr><td><code>json/parse</code></td><td><code>( str -- val )</code></td><td>Parse a JSON string</td></tr><tr><td><code>json/str</code></td><td><code>( val -- str )</code></td><td>Serialize a tak value to JSON</td></tr></tbody></table>
-<pre><code class="lang-tak">"https://example.com/api" fetch await response/json   // → tak dict/array
-"https://example.com/api" fetch await response/text   // → string
-"https://example.com/api" { x: 1 } fetch-post await response/json
-'{"x":1}' json/parse
-{ x: 1 } json/str</code></pre>
-<h3 id="js-interop"><a href="#js-interop">JS Interop</a></h3>
-<table><thead><tr><th>Word</th><th>Effect</th><th>Description</th></tr></thead><tbody><tr><td><code>import</code></td><td><code>( url -- Promise )</code></td><td>Dynamic JS module import (async; use <code>await</code>)</td></tr><tr><td><code>js/get</code></td><td><code>( js key -- val )</code></td><td>Read a property from a JS object</td></tr><tr><td><code>js/call</code></td><td><code>( js arg1..argN n -- result )</code></td><td>Call a JS function with N args</td></tr><tr><td><code>js/unwrap</code></td><td><code>( js -- val )</code></td><td>Convert a JS value to a tak value</td></tr></tbody></table>
-<pre><code class="lang-tak">"https://cdn.example.com/lib.js" import await   // ( -- js-module )
-"Chart" js/get                                   // ( js-module -- Chart )
-0 js/call                                        // call with 0 args</code></pre>
-<h3 id="static-imports-use"><a href="#static-imports-use">Static Imports (<code>use</code>)</a></h3>
-<p><code>use</code> is a hoisted import — all URLs are fetched concurrently before the program runs, with results available synchronously at the call site.</p>
-<pre><code class="lang-tak">"./lib.js" use                           ( -- module )
-"./lib.js" [ Chart ] use                 // defines word `Chart`
-"./lib.js" [ renderFn as render ] use    // defines word `render`
-"./lib.js" [ Chart renderFn as render ] use</code></pre>
-<p>The URL must be a string literal (known at parse time). Without a binding list, the whole module is pushed onto the stack. With bindings, each named export becomes a word that pushes its value.</p>
-<h3 id="debug"><a href="#debug">Debug</a></h3>
-<ul><li><code>trace</code> — log top value without consuming it</li><li><code>debug</code> — fire debug event + log full stack</li></ul>
-<h3 id="dom"><a href="#dom">DOM</a></h3>
-<table><thead><tr><th>Word</th><th>Effect</th></tr></thead><tbody><tr><td><code>dom/query</code></td><td>`( selector -- el\</td><td>null )`</td></tr><tr><td><code>dom/query-all</code></td><td><code>( selector -- arr )</code></td></tr><tr><td><code>dom/create</code></td><td><code>( tag -- el )</code></td></tr><tr><td><code>dom/append</code></td><td><code>( parent child -- parent )</code></td></tr><tr><td><code>dom/text</code></td><td><code>( el str -- el )</code></td></tr><tr><td><code>dom/html</code></td><td><code>( el str -- el )</code></td></tr><tr><td><code>dom/on</code></td><td><code>( el event quot -- el )</code></td></tr><tr><td><code>dom/attr-get</code></td><td><code>( el attr -- val )</code></td></tr><tr><td><code>dom/attr-set</code></td><td><code>( el attr val -- el )</code></td></tr><tr><td><code>dom/class-add</code></td><td><code>( el class -- el )</code></td></tr><tr><td><code>dom/class-rm</code></td><td><code>( el class -- el )</code></td></tr><tr><td><code>dom/remove</code></td><td><code>( el -- )</code></td></tr></tbody></table>
-<p><code>dom/on</code> pushes the element onto the stack before calling the quotation.</p>
-
-<h2 id="debug-panel-api"><a href="#debug-panel-api">Debug Panel API</a></h2>
-<pre><code class="lang-js">const interp = new Tak.TakInterpreter({ debug: true });
-
-interp.on('beforeWord', ({ word, stack }) =&gt; { });
-interp.on('afterWord',  ({ word, stack }) =&gt; { });
-interp.on('push',       ({ value, stack }) =&gt; { });
-interp.on('pop',        ({ value, stack }) =&gt; { });
-interp.on('error',      ({ error, word, stack }) =&gt; { });
-interp.on('scriptEnd',  ({ stack }) =&gt; { });
-
-interp.stack   // read-only snapshot
-interp.dict    // Map of all defined words</code></pre>
-<p><code>Ctrl+D</code> toggles the debug overlay when <code>data-debug="true"</code> is set.</p>
-
-<h2 id="programmatic-use"><a href="#programmatic-use">Programmatic Use</a></h2>
-<pre><code class="lang-js">import { TakInterpreter, registerStdlib, registerDomStdlib } from './dist/tak.js';
-import { tokenize } from './dist/tak.js';
-import { parse } from './dist/tak.js';
-
-const interp = new TakInterpreter({ debug: true });
-registerStdlib(interp);
-registerDomStdlib(interp);
-
-const tokens = tokenize('5 3 + .');
-const program = parse(tokens);
-await interp.run(program);</code></pre>
-
-<h2 id="project-structure"><a href="#project-structure">Project Structure</a></h2>
-<pre><code class="lang-tak">src/
-  lexer.ts          — tokenizer
-  parser.ts         — recursive-descent parser
-  ast.ts            — AST node types
-  interpreter.ts    — tree-walking interpreter + event system
-  stdlib.ts         — built-in words
-  dom-stdlib.ts     — DOM words
-  debug-panel.ts    — floating stack overlay
-  browser-runtime.ts — script tag scanner + bootstrap
-examples/
-  hello.html        — stack ops, fn defs, combinators
-  counter.html      — DOM event handling
-  fetch.html        — async fetch with debug panel</code></pre>
+<h2 id="full-documentation"><a href="#full-documentation">Full Documentation</a></h2>
+<p>Syntax reference, standard library, DOM words, async/fetch, JS interop, and programmatic API:</p>
+<p><a href="https://github.com/NickTomlin/tak/blob/main/docs/index.html"><strong>docs/index.html</strong></a></p>
+<p>*(A GitHub Pages site is coming — this will be updated to a live URL.)*</p>
 
 <h2 id="build"><a href="#build">Build</a></h2>
 <pre><code class="lang-sh">npm install
@@ -472,7 +350,7 @@ npm run typecheck    # tsc type check only</code></pre>
 <p>MIT</p>
   </main>
 </body>
-<script src="../dist/tak.js"></script>
+<script src="./tak.js"></script>
 <script>
 (function () {
   var input = document.getElementById('tak-input');

@@ -5,7 +5,7 @@
  * Reads README.md → writes docs/index.html.
  * No external dependencies.
  */
-const { readFileSync, writeFileSync, mkdirSync } = require('node:fs');
+const { readFileSync, writeFileSync, copyFileSync, mkdirSync } = require('node:fs');
 const { join } = require('node:path');
 
 const root = join(__dirname, '..');
@@ -384,6 +384,68 @@ ul li { margin-bottom: 0.3rem; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
+/* ── Playground ── */
+.playground-wrap { margin-top: 1rem; }
+
+#tak-input {
+  width: 100%;
+  min-height: 170px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.86rem;
+  background: var(--bg-code);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  padding: 1rem 1.2rem;
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+  display: block;
+}
+
+#tak-input:focus { border-color: var(--accent); }
+
+.playground-controls {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0.6rem 0;
+}
+
+.playground-controls button {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.9rem;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.playground-controls button:hover { opacity: 0.85; }
+
+#tak-clear {
+  background: var(--bg-code) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.playground-output {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.84rem;
+  background: var(--bg-code);
+  border-left: 2px solid var(--border);
+  padding: 1rem 1.2rem;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  display: none;
+}
+
+.playground-output.has-content { display: block; }
+.out-line { color: var(--fg); }
+.out-stack { color: var(--fg-muted); margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.4rem; }
+.out-error { color: #c0392b; }
+
 /* ── Responsive ── */
 @media (max-width: 640px) {
   body { flex-direction: column; }
@@ -400,8 +462,110 @@ const blocks = parseBlocks(src);
 const titleBlock = blocks.find(b => b.type === 'heading' && b.level === 1);
 const title = titleBlock ? titleBlock.text : 'tak';
 
-const nav  = buildNav(blocks);
-const body = renderBlocks(blocks);
+// Inject playground nav entry after Quick Start
+const nav = buildNav(blocks).replace(
+  '<li><a href="#full-documentation">',
+  '<li><a href="#playground">Playground</a><ul></ul></li><li><a href="#full-documentation">'
+);
+
+// Inject playground section between Quick Start and Syntax
+const PLAYGROUND_HTML = `<h2 id="playground"><a href="#playground">Playground</a></h2>
+<p>Try tak right here. Press <strong>Ctrl+Enter</strong> (or click Run) to execute.</p>
+<div class="playground-wrap">
+  <textarea id="tak-input" spellcheck="false">// Basic arithmetic
+3 4 + .
+
+// Define a function
+fn square ( n -- n ) { dup * }
+5 square .
+
+// Higher-order words
+[ 1 2 3 4 5 ] [ dup * ] map .</textarea>
+  <div class="playground-controls">
+    <button id="tak-run">&#9654; Run</button>
+    <button id="tak-clear">Clear output</button>
+  </div>
+  <div id="tak-output" class="playground-output" aria-live="polite"></div>
+</div>`;
+
+const PLAYGROUND_SCRIPT = `<script src="./tak.js"></script>
+<script>
+(function () {
+  var input = document.getElementById('tak-input');
+  var output = document.getElementById('tak-output');
+  var runBtn = document.getElementById('tak-run');
+  var clearBtn = document.getElementById('tak-clear');
+
+  function clearOutput() {
+    output.innerHTML = '';
+    output.classList.remove('has-content');
+  }
+
+  async function runTak() {
+    clearOutput();
+    var source = input.value.trim();
+    if (!source) return;
+
+    var lines = [];
+    var interp = new Tak.TakInterpreter({ debug: false });
+    Tak.registerStdlib(interp);
+
+    var origLog = console.log;
+    console.log = function () {
+      var text = Array.from(arguments).join(' ');
+      origLog(text);
+      lines.push({ type: 'out', text: text });
+    };
+
+    var finalStack = [];
+    interp.on('scriptEnd', function (e) { finalStack = e.stack; });
+
+    try {
+      var tokens = Tak.tokenize(source);
+      var program = Tak.parse(tokens);
+      await interp.run(program);
+    } catch (err) {
+      lines.push({ type: 'error', text: err.message || String(err) });
+    } finally {
+      console.log = origLog;
+    }
+
+    var frag = document.createDocumentFragment();
+    lines.forEach(function (item) {
+      var div = document.createElement('div');
+      div.className = item.type === 'error' ? 'out-error' : 'out-line';
+      div.textContent = (item.type === 'error' ? '\\u26a0 ' : '') + item.text;
+      frag.appendChild(div);
+    });
+
+    if (finalStack.length > 0) {
+      var stackDiv = document.createElement('div');
+      stackDiv.className = 'out-stack';
+      stackDiv.textContent = 'stack: [ ' + finalStack.map(function (v) { return Tak.takFormat(v); }).join('  ') + ' ]';
+      frag.appendChild(stackDiv);
+    }
+
+    if (lines.length > 0 || finalStack.length > 0) {
+      output.appendChild(frag);
+      output.classList.add('has-content');
+    }
+  }
+
+  runBtn.addEventListener('click', runTak);
+  clearBtn.addEventListener('click', clearOutput);
+  input.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      runTak();
+    }
+  });
+})();
+</script>`;
+
+const body = renderBlocks(blocks).replace(
+  '\n<h2 id="full-documentation">',
+  '\n' + PLAYGROUND_HTML + '\n\n<h2 id="full-documentation">'
+);
 
 const html = `<!DOCTYPE html>
 <html lang="en">
@@ -420,8 +584,13 @@ const html = `<!DOCTYPE html>
     ${body}
   </main>
 </body>
+${PLAYGROUND_SCRIPT}
 </html>`;
 
 mkdirSync(join(root, 'docs'), { recursive: true });
 writeFileSync(join(root, 'docs', 'index.html'), html);
+
+copyFileSync(join(root, 'dist', 'tak.js'), join(root, 'docs', 'tak.js'));
+
 console.log('docs/index.html written');
+console.log('docs/tak.js copied from dist/');
