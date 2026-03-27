@@ -208,6 +208,68 @@ ul li { margin-bottom: 0.3rem; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
+/* ── Playground ── */
+.playground-wrap { margin-top: 1rem; }
+
+#tak-input {
+  width: 100%;
+  min-height: 170px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.86rem;
+  background: var(--bg-code);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  padding: 1rem 1.2rem;
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+  display: block;
+}
+
+#tak-input:focus { border-color: var(--accent); }
+
+.playground-controls {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0.6rem 0;
+}
+
+.playground-controls button {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.9rem;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.playground-controls button:hover { opacity: 0.85; }
+
+#tak-clear {
+  background: var(--bg-code) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.playground-output {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.84rem;
+  background: var(--bg-code);
+  border-left: 2px solid var(--border);
+  padding: 1rem 1.2rem;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  display: none;
+}
+
+.playground-output.has-content { display: block; }
+.out-line { color: var(--fg); }
+.out-stack { color: var(--fg-muted); margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.4rem; }
+.out-error { color: #c0392b; }
+
 /* ── Responsive ── */
 @media (max-width: 640px) {
   body { flex-direction: column; }
@@ -218,7 +280,7 @@ ul li { margin-bottom: 0.3rem; }
 <body>
   <aside id="sidebar">
     <a class="logo" href="#">tak</a>
-    <nav><ul><li><a href="#a-taste-of-tak">A Taste of tak</a><ul></ul></li><li><a href="#quick-start">Quick Start</a><ul></ul></li><li><a href="#syntax">Syntax</a><ul><li><a href="#literals">Literals</a></li><li><a href="#function-definitions-stack-effects-required">Function definitions (stack effects required)</a></li><li><a href="#quotations-arrays">Quotations / arrays</a></li><li><a href="#dict-literals">Dict literals</a></li><li><a href="#control-flow-combinators">Control flow (combinators)</a></li><li><a href="#javascript-escape-hatch">JavaScript escape hatch</a></li><li><a href="#comments">Comments</a></li></ul></li><li><a href="#standard-library">Standard Library</a><ul><li><a href="#stack">Stack</a></li><li><a href="#arithmetic">Arithmetic</a></li><li><a href="#comparison-boolean">Comparison → boolean</a></li><li><a href="#logic">Logic</a></li><li><a href="#string">String</a></li><li><a href="#array-quotation">Array / Quotation</a></li><li><a href="#dict">Dict</a></li><li><a href="#control">Control</a></li><li><a href="#io">I/O</a></li><li><a href="#type">Type</a></li><li><a href="#async-fetch">Async / Fetch</a></li><li><a href="#js-interop">JS Interop</a></li><li><a href="#static-imports-use">Static Imports (`use`)</a></li><li><a href="#debug">Debug</a></li><li><a href="#dom">DOM</a></li></ul></li><li><a href="#debug-panel-api">Debug Panel API</a><ul></ul></li><li><a href="#programmatic-use">Programmatic Use</a><ul></ul></li><li><a href="#project-structure">Project Structure</a><ul></ul></li><li><a href="#build">Build</a><ul></ul></li><li><a href="#license">License</a><ul></ul></li></ul></nav>
+    <nav><ul><li><a href="#a-taste-of-tak">A Taste of tak</a><ul></ul></li><li><a href="#quick-start">Quick Start</a><ul></ul></li><li><a href="#playground">Playground</a><ul></ul></li><li><a href="#syntax">Syntax</a><ul><li><a href="#literals">Literals</a></li><li><a href="#function-definitions-stack-effects-required">Function definitions (stack effects required)</a></li><li><a href="#quotations-arrays">Quotations / arrays</a></li><li><a href="#dict-literals">Dict literals</a></li><li><a href="#control-flow-combinators">Control flow (combinators)</a></li><li><a href="#javascript-escape-hatch">JavaScript escape hatch</a></li><li><a href="#comments">Comments</a></li></ul></li><li><a href="#standard-library">Standard Library</a><ul><li><a href="#stack">Stack</a></li><li><a href="#arithmetic">Arithmetic</a></li><li><a href="#comparison-boolean">Comparison → boolean</a></li><li><a href="#logic">Logic</a></li><li><a href="#string">String</a></li><li><a href="#array-quotation">Array / Quotation</a></li><li><a href="#dict">Dict</a></li><li><a href="#control">Control</a></li><li><a href="#io">I/O</a></li><li><a href="#type">Type</a></li><li><a href="#async-fetch">Async / Fetch</a></li><li><a href="#js-interop">JS Interop</a></li><li><a href="#static-imports-use">Static Imports (`use`)</a></li><li><a href="#debug">Debug</a></li><li><a href="#dom">DOM</a></li></ul></li><li><a href="#debug-panel-api">Debug Panel API</a><ul></ul></li><li><a href="#programmatic-use">Programmatic Use</a><ul></ul></li><li><a href="#project-structure">Project Structure</a><ul></ul></li><li><a href="#build">Build</a><ul></ul></li><li><a href="#license">License</a><ul></ul></li></ul></nav>
   </aside>
   <main>
 <p><strong>tak</strong> is a small stack-based language that runs in the browser. Inspired by Factor's quotation model, PostScript's dictionary flavor, and a desire for maximum debuggability. The name means "thank you" in Danish — a tribute to the language hackers who came before.</p>
@@ -264,6 +326,25 @@ fn factorial ( n -- n ) {
 &lt;/script&gt;</code></pre>
 <p>Enable the live debug panel (floating stack overlay):</p>
 <pre><code class="lang-html">&lt;script type="module" src="https://esm.sh/@nicktomlin/tak" data-debug="true"&gt;&lt;/script&gt;</code></pre>
+
+<h2 id="playground"><a href="#playground">Playground</a></h2>
+<p>Try tak right here. Press <strong>Ctrl+Enter</strong> (or click Run) to execute.</p>
+<div class="playground-wrap">
+  <textarea id="tak-input" spellcheck="false">// Basic arithmetic
+3 4 + .
+
+// Define a function
+fn square ( n -- n ) { dup * }
+5 square .
+
+// Higher-order words
+[ 1 2 3 4 5 ] [ dup * ] map .</textarea>
+  <div class="playground-controls">
+    <button id="tak-run">&#9654; Run</button>
+    <button id="tak-clear">Clear output</button>
+  </div>
+  <div id="tak-output" class="playground-output" aria-live="polite"></div>
+</div>
 
 <h2 id="syntax"><a href="#syntax">Syntax</a></h2>
 <h3 id="literals"><a href="#literals">Literals</a></h3>
@@ -391,4 +472,77 @@ npm run typecheck    # tsc type check only</code></pre>
 <p>MIT</p>
   </main>
 </body>
+<script src="https://unpkg.com/@nicktomlin/tak/dist/tak.js"></script>
+<script>
+(function () {
+  var input = document.getElementById('tak-input');
+  var output = document.getElementById('tak-output');
+  var runBtn = document.getElementById('tak-run');
+  var clearBtn = document.getElementById('tak-clear');
+
+  function clearOutput() {
+    output.innerHTML = '';
+    output.classList.remove('has-content');
+  }
+
+  async function runTak() {
+    clearOutput();
+    var source = input.value.trim();
+    if (!source) return;
+
+    var lines = [];
+    var interp = new Tak.TakInterpreter({ debug: false });
+    Tak.registerStdlib(interp);
+
+    var origLog = console.log;
+    console.log = function () {
+      var text = Array.from(arguments).join(' ');
+      origLog(text);
+      lines.push({ type: 'out', text: text });
+    };
+
+    var finalStack = [];
+    interp.on('scriptEnd', function (e) { finalStack = e.stack; });
+
+    try {
+      var tokens = Tak.tokenize(source);
+      var program = Tak.parse(tokens);
+      await interp.run(program);
+    } catch (err) {
+      lines.push({ type: 'error', text: err.message || String(err) });
+    } finally {
+      console.log = origLog;
+    }
+
+    var frag = document.createDocumentFragment();
+    lines.forEach(function (item) {
+      var div = document.createElement('div');
+      div.className = item.type === 'error' ? 'out-error' : 'out-line';
+      div.textContent = (item.type === 'error' ? '\u26a0 ' : '') + item.text;
+      frag.appendChild(div);
+    });
+
+    if (finalStack.length > 0) {
+      var stackDiv = document.createElement('div');
+      stackDiv.className = 'out-stack';
+      stackDiv.textContent = 'stack: [ ' + finalStack.map(function (v) { return Tak.takFormat(v); }).join('  ') + ' ]';
+      frag.appendChild(stackDiv);
+    }
+
+    if (lines.length > 0 || finalStack.length > 0) {
+      output.appendChild(frag);
+      output.classList.add('has-content');
+    }
+  }
+
+  runBtn.addEventListener('click', runTak);
+  clearBtn.addEventListener('click', clearOutput);
+  input.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      runTak();
+    }
+  });
+})();
+</script>
 </html>
