@@ -22,7 +22,37 @@
     "watch": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap --watch",
     "typecheck": "tsc --noEmit",
     "docs": "node scripts/build-docs.js",
-    "serve": "node scripts/serve.js"
+    "serve": "node scripts/serve.js",
+    "release": "release-it"
+  },
+  "release-it": {
+    "hooks": {
+      "before:init": ["npm run typecheck", "npm run build"],
+      "after:bump": ["npm run docs"]
+    },
+    "git": {
+      "commitMessage": "chore: release v${version}",
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true,
+      "releaseName": "v${version}",
+      "assets": [
+        "dist/tak.js",
+        "dist/tak.min.js",
+        "dist/tak.esm.js",
+        "dist/tak.esm.min.js"
+      ]
+    },
+    "npm": {
+      "publish": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md"
+      }
+    }
   },
   "keywords": [
     "stack-based",
@@ -32,8 +62,10 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@release-it/conventional-changelog": "^10.0.6",
     "@types/node": "^25.5.0",
     "esbuild": "^0.24.0",
+    "release-it": "^19.2.4",
     "typescript": "^5.7.0"
   }
 }
