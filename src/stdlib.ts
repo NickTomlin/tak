@@ -26,6 +26,12 @@ function assertQuot(v: TakValue, word: string): TakQuot {
   return v;
 }
 
+// Arrays are callable (pushing their items), so combinators accept both.
+function assertCallable(v: TakValue, word: string): TakQuot | TakArray {
+  if (isTakQuot(v) || isTakArray(v)) return v as TakQuot | TakArray;
+  throw new TakError(`${word}: expected quotation, got ${takType(v)}`);
+}
+
 function assertDict(v: TakValue, word: string): TakDict {
   if (!isTakDict(v)) throw new TakError(`${word}: expected dict, got ${takType(v)}`);
   return v;
@@ -308,7 +314,7 @@ export function registerStdlib(interp: TakInterpreter): void {
   });
 
   interp.defineWord('map', async i => {
-    const quot = assertQuot(i.pop(), 'map');
+    const quot = assertCallable(i.pop(), 'map');
     const arr = assertArray(i.pop(), 'map');
     const results: TakValue[] = [];
     for (const item of arr.items) {
@@ -320,7 +326,7 @@ export function registerStdlib(interp: TakInterpreter): void {
   });
 
   interp.defineWord('filter', async i => {
-    const quot = assertQuot(i.pop(), 'filter');
+    const quot = assertCallable(i.pop(), 'filter');
     const arr = assertArray(i.pop(), 'filter');
     const results: TakValue[] = [];
     for (const item of arr.items) {
@@ -333,7 +339,7 @@ export function registerStdlib(interp: TakInterpreter): void {
   });
 
   interp.defineWord('reduce', async i => {
-    const quot = assertQuot(i.pop(), 'reduce');
+    const quot = assertCallable(i.pop(), 'reduce');
     const init = i.pop();
     const arr = assertArray(i.pop(), 'reduce');
     i.push(init);
@@ -345,7 +351,7 @@ export function registerStdlib(interp: TakInterpreter): void {
   });
 
   interp.defineWord('each', async i => {
-    const quot = assertQuot(i.pop(), 'each');
+    const quot = assertCallable(i.pop(), 'each');
     const arr = assertArray(i.pop(), 'each');
     for (const item of arr.items) {
       i.push(item);
@@ -354,7 +360,7 @@ export function registerStdlib(interp: TakInterpreter): void {
   });
 
   interp.defineWord('call', async i => {
-    const quot = assertQuot(i.pop(), 'call');
+    const quot = assertCallable(i.pop(), 'call');
     await i.callQuot(quot);
   });
 
@@ -392,8 +398,8 @@ export function registerStdlib(interp: TakInterpreter): void {
   // -------------------------------------------------------------------------
 
   interp.defineWord('if', async i => {
-    const falseQuot = assertQuot(i.pop(), 'if');
-    const trueQuot = assertQuot(i.pop(), 'if');
+    const falseQuot = assertCallable(i.pop(), 'if');
+    const trueQuot = assertCallable(i.pop(), 'if');
     const cond = i.pop();
     if (cond) {
       await i.callQuot(trueQuot);
@@ -403,20 +409,20 @@ export function registerStdlib(interp: TakInterpreter): void {
   });
 
   interp.defineWord('when', async i => {
-    const quot = assertQuot(i.pop(), 'when');
+    const quot = assertCallable(i.pop(), 'when');
     const cond = i.pop();
     if (cond) await i.callQuot(quot);
   });
 
   interp.defineWord('unless', async i => {
-    const quot = assertQuot(i.pop(), 'unless');
+    const quot = assertCallable(i.pop(), 'unless');
     const cond = i.pop();
     if (!cond) await i.callQuot(quot);
   });
 
   interp.defineWord('while', async i => {
-    const bodyQuot = assertQuot(i.pop(), 'while');
-    const condQuot = assertQuot(i.pop(), 'while');
+    const bodyQuot = assertCallable(i.pop(), 'while');
+    const condQuot = assertCallable(i.pop(), 'while');
     while (true) {
       await i.callQuot(condQuot);
       const cond = i.pop();
@@ -426,7 +432,7 @@ export function registerStdlib(interp: TakInterpreter): void {
   });
 
   interp.defineWord('times', async i => {
-    const quot = assertQuot(i.pop(), 'times');
+    const quot = assertCallable(i.pop(), 'times');
     const n = assertNumber(i.pop(), 'times');
     for (let j = 0; j < n; j++) {
       await i.callQuot(quot);
