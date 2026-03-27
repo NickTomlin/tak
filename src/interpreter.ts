@@ -359,7 +359,14 @@ export class TakInterpreter extends TakEmitter {
   // Call a quotation (used by stdlib combinators)
   // -------------------------------------------------------------------------
 
-  async callQuot(quot: TakQuot): Promise<void> {
+  // Arrays are callable — calling [ 1 2 3 ] pushes each item onto the stack.
+  // This makes array literals work naturally in combinator positions:
+  //   true [ "yes" ] [ "no" ] if  →  "yes"
+  async callQuot(quot: TakQuot | TakArray): Promise<void> {
+    if (quot.kind === 'array') {
+      for (const item of quot.items) this.push(item);
+      return;
+    }
     for (const node of quot.body) {
       await this.eval(node);
     }

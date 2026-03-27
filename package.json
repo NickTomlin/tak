@@ -20,6 +20,7 @@
     "build:dev": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap",
     "build:cli": "esbuild src/cli.ts --bundle --outfile=dist/cli.js --platform=node --format=cjs --banner:js=\"globalThis.Element = globalThis.Element || class Element {};\" && chmod +x dist/cli.js",
     "watch": "esbuild src/browser-runtime.ts --bundle --outfile=dist/tak.js --platform=browser --format=iife --global-name=Tak --sourcemap --watch",
+    "test": "node --test --import tsx tests/*.test.ts",
     "typecheck": "tsc --noEmit",
     "docs": "node scripts/build-docs.js",
     "build:docs": "npm run build && npm run docs",
@@ -28,8 +29,13 @@
   },
   "release-it": {
     "hooks": {
-      "before:init": ["npm run typecheck", "npm run build"],
-      "after:bump": ["npm run docs"]
+      "before:init": [
+        "npm run typecheck",
+        "npm run build"
+      ],
+      "after:bump": [
+        "npm run docs"
+      ]
     },
     "git": {
       "commitMessage": "chore: release v${version}",
@@ -48,7 +54,10 @@
     "npm": {
       "publish": true,
       "skipChecks": true,
-      "publishArgs": ["--access", "public"]
+      "publishArgs": [
+        "--access",
+        "public"
+      ]
     },
     "plugins": {
       "@release-it/conventional-changelog": {
@@ -69,6 +78,7 @@
     "@types/node": "^25.5.0",
     "esbuild": "^0.24.0",
     "release-it": "^19.2.4",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.0"
   }
 }
