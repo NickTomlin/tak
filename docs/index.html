@@ -245,7 +245,7 @@ fn factorial ( n -- n ) {
 "results" get 0 nth "name" get .</code></pre>
 <p>Embed it in any page — no install required:</p>
 <pre><code class="lang-html">&lt;!-- via CDN --&gt;
-&lt;script type="module" src="https://esm.sh/tak"&gt;&lt;/script&gt;
+&lt;script type="module" src="https://esm.sh/@nicktomlin/tak"&gt;&lt;/script&gt;
 &lt;script type="text/tak"&gt;
   fn greet ( str -- ) { "Hello, " swap concat . }
   "World" greet
@@ -254,17 +254,17 @@ fn factorial ( n -- n ) {
 <h2 id="quick-start"><a href="#quick-start">Quick Start</a></h2>
 <p>Load tak from a CDN — no build step, no install:</p>
 <pre><code class="lang-html">&lt;!-- ESM via esm.sh --&gt;
-&lt;script type="module" src="https://esm.sh/tak"&gt;&lt;/script&gt;
+&lt;script type="module" src="https://esm.sh/@nicktomlin/tak"&gt;&lt;/script&gt;
 
 &lt;!-- or classic script via unpkg --&gt;
-&lt;script src="https://unpkg.com/tak/dist/tak.js"&gt;&lt;/script&gt;</code></pre>
+&lt;script src="https://unpkg.com/@nicktomlin/tak/dist/tak.js"&gt;&lt;/script&gt;</code></pre>
 <p>Then write tak inline:</p>
 <pre><code class="lang-html">&lt;script type="text/tak"&gt;
   fn greet ( str -- ) { "Hello, " swap concat . }
   "World" greet
 &lt;/script&gt;</code></pre>
 <p>Enable the live debug panel (floating stack overlay):</p>
-<pre><code class="lang-html">&lt;script type="module" src="https://esm.sh/tak" data-debug="true"&gt;&lt;/script&gt;</code></pre>
+<pre><code class="lang-html">&lt;script type="module" src="https://esm.sh/@nicktomlin/tak" data-debug="true"&gt;&lt;/script&gt;</code></pre>
 
 <h2 id="syntax"><a href="#syntax">Syntax</a></h2>
 <h3 id="literals"><a href="#literals">Literals</a></h3>

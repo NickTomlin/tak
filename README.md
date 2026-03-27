@@ -35,7 +35,7 @@ Embed it in any page — no install required:
 
 ```html
 <!-- via CDN -->
-<script type="module" src="https://esm.sh/tak"></script>
+<script type="module" src="https://esm.sh/@nicktomlin/tak"></script>
 <script type="text/tak">
   fn greet ( str -- ) { "Hello, " swap concat . }
   "World" greet
@@ -50,10 +50,10 @@ Load tak from a CDN — no build step, no install:
 
 ```html
 <!-- ESM via esm.sh -->
-<script type="module" src="https://esm.sh/tak"></script>
+<script type="module" src="https://esm.sh/@nicktomlin/tak"></script>
 
 <!-- or classic script via unpkg -->
-<script src="https://unpkg.com/tak/dist/tak.js"></script>
+<script src="https://unpkg.com/@nicktomlin/tak/dist/tak.js"></script>
 ```
 
 Then write tak inline:
@@ -68,7 +68,7 @@ Then write tak inline:
 Enable the live debug panel (floating stack overlay):
 
 ```html
-<script type="module" src="https://esm.sh/tak" data-debug="true"></script>
+<script type="module" src="https://esm.sh/@nicktomlin/tak" data-debug="true"></script>
 ```
 
 ---

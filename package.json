@@ -1,5 +1,5 @@
 {
-  "name": "tak",
+  "name": "@nicktomlin/tak",
   "version": "0.1.0",
   "description": "tak — a stack-based language for the browser and command line",
   "main": "dist/tak.js",
@@ -45,7 +45,8 @@
       ]
     },
     "npm": {
-      "publish": true
+      "publish": true,
+      "publishArgs": ["--access", "public"]
     },
     "plugins": {
       "@release-it/conventional-changelog": {
