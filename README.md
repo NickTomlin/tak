@@ -59,9 +59,7 @@ Enable the live debug panel (floating stack overlay, `Ctrl+D` to dismiss):
 
 Syntax reference, standard library, DOM words, async/fetch, JS interop, and programmatic API:
 
-[**docs/index.html**](https://github.com/NickTomlin/tak/blob/main/docs/index.html)
-
-*(A GitHub Pages site is coming — this will be updated to a live URL.)*
+**[nicktomlin.github.io/tak](https://nicktomlin.github.io/tak/)**
 
 ---
 
