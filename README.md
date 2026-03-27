@@ -59,7 +59,7 @@ Enable the live debug panel (floating stack overlay, `Ctrl+D` to dismiss):
 
 Syntax reference, standard library, DOM words, async/fetch, JS interop, and programmatic API:
 
-**[nicktomlin.github.io/tak](https://nicktomlin.github.io/tak/)**
+**[nicktomlin.github.io/tak/language.html](https://nicktomlin.github.io/tak/language.html)**
 
 ---
 
