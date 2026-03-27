@@ -1,6 +1,6 @@
 {
   "name": "@nicktomlin/tak",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "tak — a stack-based language for the browser and command line",
   "main": "dist/tak.js",
   "module": "dist/tak.esm.min.js",
