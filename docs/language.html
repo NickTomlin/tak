@@ -42,6 +42,7 @@
           </ul>
         </li>
         <li><a href="#debug-panel-api">Debug Panel API</a></li>
+        <li><a href="#cli">CLI</a></li>
         <li><a href="#programmatic-use">Programmatic Use</a></li>
       </ul>
     </nav>
@@ -248,6 +249,13 @@ interp.on('scriptEnd',  ({ stack }) => { });
 interp.stack   // read-only snapshot
 interp.dict    // Map of all defined words</code></pre>
     <p><code>Ctrl+D</code> toggles the debug overlay when <code>data-debug="true"</code> is set.</p>
+
+    <h2 id="cli"><a href="#cli">CLI</a></h2>
+    <pre><code>tak script.tak        # run a file
+echo "3 4 + ." | tak  # stdin
+tak                   # interactive REPL</code></pre>
+    <p>Install: <code>npm install -g @nicktomlin/tak</code></p>
+    <p>DOM words are not available in the CLI.</p>
 
     <h2 id="programmatic-use"><a href="#programmatic-use">Programmatic Use</a></h2>
     <pre><code>import { TakInterpreter, registerStdlib, registerDomStdlib } from './dist/tak.js';
