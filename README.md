@@ -46,11 +46,35 @@ Then write tak inline:
 </script>
 ```
 
-Enable the live debug panel (floating stack overlay, `Ctrl+D` to dismiss):
+Enable the debug panel (`Ctrl+D` to dismiss):
 
 ```html
 <script type="module" src="https://esm.sh/@nicktomlin/tak" data-debug="true"></script>
 ```
+
+---
+
+## CLI
+
+```sh
+tak script.tak        # run a file
+echo "3 4 + ." | tak  # stdin
+tak                   # interactive REPL
+```
+
+Install globally:
+
+```sh
+npm install -g @nicktomlin/tak
+```
+
+Or build from source:
+
+```sh
+npm run build:cli     # → dist/cli.js
+```
+
+DOM words are not available in the CLI. Everything else works.
 
 ---
 
